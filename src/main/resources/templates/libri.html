@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>libri</title>
+</head>
+<body>
+    <h1>libri</h1>
+    <div th:if="${#lists.isEmpty(libri)}">
+        <p>Non ci sono libri nel database.</p>
+    </div>
+    <ul>
+        <li th:each="libro : ${libri}">
+            <a th:href="@{'/libri/' + ${libro.id}}" th:text="${libro.titolo}"></a>
+        </li>
+    </ul>
+        <li th:each="libro : ${libri}">
+            <p th:text="${libro.titolo}"></p>
+        <li>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    
+</body>
+</html>

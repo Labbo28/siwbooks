@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autori</title>
+</head>
+<body>
+    <h1>Autori</h1>
+    <div th:if="${#lists.isEmpty(autori)}">
+        <p>Non ci sono autori nel database.</p>
+    </div>
+        <li th:each="autore : ${autori}">
+            <p th:href="@{'/autori/' + ${autore.id}}"  th:text="${autore.nome}"></p>
+        <li>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    
+</body>
+</html>
