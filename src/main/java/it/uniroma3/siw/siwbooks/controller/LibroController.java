@@ -18,10 +18,6 @@ public class LibroController {
          libroService.getAllLibri();
          return "libri.html";
      }
-     @GetMapping("/")
-        public String getHome() {
-            return "index.html";
-     }
      
 
 }

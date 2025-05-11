@@ -9,9 +9,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Utente {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.AUTO)
@@ -24,6 +26,7 @@ public class Utente {
    
     @OneToMany(mappedBy = "utente")
     private Set <Recensione> recensioni;
+
 
     public Utente(String nome, String cognome, String email, String password, Ruolo ruolo) {
         this.nome = nome;

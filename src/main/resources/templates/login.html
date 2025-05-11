@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        .error {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .alert-danger {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1>Accedi al tuo account</h1>
+        
+        <!-- Messaggi di successo da redirect (es. "Login effettuato con successo!") -->
+        <div class="alert alert-success"
+             th:if="${successMessage != null}"
+             th:text="${successMessage}">
+        </div>
+        
+        <!-- Messaggi di errore globali (es. eccezioni generiche) -->
+        <div class="alert alert-danger"
+             th:if="${errorMessage != null}"
+             th:text="${errorMessage}">
+        </div>
+        
+        <form action="#"
+              th:action="@{/login}"
+              th:object="${userLoginDTO}"
+              method="post">
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email"
+                       id="email"
+                       th:field="*{email}">
+                <span class="error"
+                      th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}">
+                </span>
+                <!-- Messaggio specifico da EmailNotFoundException -->
+                <span class="error"
+                      th:if="${errorEmail != null}"
+                      th:text="${errorEmail}">
+                </span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password"
+                       id="password"
+                       th:field="*{password}">
+                <span class="error"
+                      th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}">
+                </span>
+                <!-- Messaggio specifico da InvalidPasswordException -->
+                <span class="error"
+                      th:if="${errorPassword != null}"
+                      th:text="${errorPassword}">
+                </span>
+            </div>
+            
+            <button type="submit">Accedi</button>
+        </form>
+    </div>
+    
+    <nav>
+        <ul style="text-align: center; list-style: none; padding: 0;">
+            <li style="display: inline; margin: 0 10px;"><a href="/">Home</a></li>
+            <li style="display: inline; margin: 0 10px;"><a href="/libri">Libri</a></li>
+            <li style="display: inline; margin: 0 10px;"><a href="/autori">Autori</a></li>
+            <li style="display: inline; margin: 0 10px;"><a href="/register">Registrati</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,21 +46,6 @@
             text-align: right;
             margin: 10px;
         }
-        
-        .content {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .alert-success {
-            padding: 15px;
-            margin: 20px auto;
-            width: 80%;
-            max-width: 600px;
-            background-color: #dff0d8;
-            color: #3c763d;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -90,18 +75,8 @@
     </nav>
     
     <!-- Messaggi di successo -->
-    <div class="alert-success" th:if="${successMessage != null}" th:text="${successMessage}">
-    </div>
-    
-    <div class="content">
-        <h2>Benvenuto su SiwBooks</h2>
-        <p>Esplora la nostra collezione di libri e autori.</p>
-        
-        <!-- Contenuto personalizzato per utenti loggati -->
-        <div th:if="${session.utente != null}">
-            <p>Accesso effettuato come: <span th:text="${session.utente.nome + ' ' + session.utente.cognome}">Nome Cognome</span></p>
-            <p th:if="${session.utente.ruolo.name() == 'ADMIN'}">Hai accesso alle funzionalità di amministrazione.</p>
-        </div>
+    <div style="text-align: center; margin: 20px; padding: 10px; background-color: #dff0d8; color: #3c763d;"
+         th:if="${successMessage != null}" th:text="${successMessage}">
     </div>
 </body>
 </html>
