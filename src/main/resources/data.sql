@@ -1,3 +1,4 @@
+--inserimento utenti
 INSERT INTO utente (id,nome, cognome, email, password, ruolo)
 VALUES
 (0,'Pippo', 'Adminetti', 'pippo.admin@siwbooks.it',
@@ -8,3 +9,6 @@ VALUES
 
  
 SELECT setval('utente_seq', 2, false);
+
+--inserimento libri
+
