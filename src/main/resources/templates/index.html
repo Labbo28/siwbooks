@@ -1,107 +1,162 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiwBooks</title>
     <style>
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .user-info {
-            text-align: right;
-            margin: 10px;
-        }
-        
-        .main-title {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        nav ul {
-            text-align: center;
-            list-style: none;
-            padding: 0;
-        }
-        
-        nav li {
-            display: inline;
-            margin: 0 10px;
-        }
-        
-        .logout-btn {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        
-        .login-register {
-            text-align: right;
-            margin: 10px;
-        }
-        
-        .content {
-            text-align: center;
-            margin-top: 30px;
-        }
-        
-        .alert-success {
-            padding: 15px;
-            margin: 20px auto;
-            width: 80%;
-            max-width: 600px;
-            background-color: #dff0d8;
-            color: #3c763d;
-            border-radius: 4px;
-        }
-    </style>
+        /* Reset base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f4f4f9; color: #333; }
+
+
+    /* Header layout con grid */
+    .header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        background: #5a67d8;
+        color: white;
+        padding: 10px 20px;
+    }
+    .header .logo {
+        font-size: 1.4rem;
+        font-weight: bold;
+    }
+    .main-title {
+        text-align: center;
+        font-size: 2rem;
+    }
+    .user-info, .login-register {
+        font-size: 0.9rem;
+    }
+    .login-register a { color: #e2e8f0; text-decoration: none; margin-left: 10px; }
+    .login-register a:hover { text-decoration: underline; }
+    .logout-btn {
+        background-color: #e53e3e;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    /* Nav bar */
+    nav {
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+    }
+    nav li { margin: 0 15px; }
+    nav a {
+        text-decoration: none;
+        color: #4a5568;
+        font-weight: bold;
+        padding: 10px;
+    }
+    nav a:hover { background: #e2e8f0; border-radius: 4px; }
+
+    /* Success alert */
+    .alert-success {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 15px;
+        background-color: #d1fae5;
+        color: #065f46;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    /* Main content */
+    .content {
+        text-align: center;
+        margin: 40px auto;
+        max-width: 800px;
+    }
+    .content h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        color: #2d3748;
+    }
+    .content p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: #4a5568;
+    }
+
+    /* Image styling */
+    .image-container {
+        margin-top: 30px;
+    }
+    .image-container img {
+        max-width: 50%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Footer */
+    footer {
+        margin-top: 60px;
+        padding: 20px;
+        background: #edf2f7;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #718096;
+    }
+</style>
+```
+
 </head>
 <body>
-    <div class="header">
-        <h1 class="main-title">Welcome to SiwBooks</h1>
-        
-        <!-- Mostra i dettagli dell'utente quando è loggato -->
-        <div class="user-info" th:if="${session.utente != null}">
-            <p>Benvenuto, <span th:text="${session.utente.nome}">Nome</span>!</p>
-            <form action="/logout" method="post">
+    <header class="header">
+        <div class="logo">SIWBooks</div>
+        <h1 class="main-title">Benvenuto su SiwBooks</h1>
+        <!-- user-info o login-register -->
+        <div th:if="${session.utente != null}" class="user-info">
+            <span>Benvenuto, <strong th:text="${session.utente.nome}"></strong>!</span>
+            <form action="/logout" method="post" style="display:inline;">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
-        
-        <!-- Mostra i link di login/registrazione quando non è loggato -->
-        <div class="login-register" th:if="${session.utente == null}">
-            <a href="/login">Login</a> | 
+        <div th:if="${session.utente == null}" class="login-register">
+            <a href="/login">Login</a> |
             <a href="/register">Registrati</a>
         </div>
-    </div>
-    
-    <nav>
-        <ul>
-            <li><a href="/libri">Libri</a></li>
-            <li><a href="/autori">Autori</a></li>
-        </ul>
-    </nav>
-    
-    <!-- Messaggi di successo -->
-    <div class="alert-success" th:if="${successMessage != null}" th:text="${successMessage}">
-    </div>
-    
-    <div class="content">
-        <h2>Benvenuto su SiwBooks</h2>
-        <p>Esplora la nostra collezione di libri e autori.</p>
+    </header>
+
+```
+<nav>
+    <ul>
+        <li><a href="/libri">Libri</a></li>
+        <li><a href="/autori">Autori</a></li>
         
-        <!-- Contenuto personalizzato per utenti loggati -->
-        <div th:if="${session.utente != null}">
-            <p>Accesso effettuato come: <span th:text="${session.utente.nome + ' ' + session.utente.cognome}">Nome Cognome</span></p>
-            <p th:if="${session.utente.ruolo.name() == 'ADMIN'}">Hai accesso alle funzionalità di amministrazione.</p>
-        </div>
+    </ul>
+</nav>
+
+<main class="content">
+    <div th:if="${successMessage != null}" class="alert-success" th:text="${successMessage}"></div>
+    <h2>Esplora la nostra collezione</h2>
+    <p>Scopri nuovi libri, autori e recensioni dalla community di lettori di SIWBooks.</p>
+    <div th:if="${session.utente != null}">
+        <p>Accesso effettuato come: <strong th:text="${session.utente.nome + ' ' + session.utente.cognome}"></strong></p>
+        <p th:if="${session.utente.ruolo.name() == 'ADMIN'}">Hai accesso alle funzioni di amministrazione.</p>
     </div>
+
+    <div class="image-container">
+        <img th:src="@{/assets/books.png}" alt="SiwBooks">
+    </div>
+</main>
+
+<footer>
+    &copy; 2025 SIWBooks - Tutti i diritti riservati
+</footer>
+
+
 </body>
 </html>
