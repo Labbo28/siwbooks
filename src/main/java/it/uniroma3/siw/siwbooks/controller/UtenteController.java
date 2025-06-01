@@ -1,6 +1,7 @@
 package it.uniroma3.siw.siwbooks.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,27 +12,47 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.uniroma3.siw.siwbooks.dto.UserRegistrationDTO;
 import it.uniroma3.siw.siwbooks.dto.UserLoginDTO;
-import it.uniroma3.siw.siwbooks.exceptions.EmailNotFoundException;
-import it.uniroma3.siw.siwbooks.exceptions.InvalidPasswordException;
 import it.uniroma3.siw.siwbooks.exceptions.alreadyRegisteredException;
-import it.uniroma3.siw.siwbooks.model.Utente;
+import it.uniroma3.siw.siwbooks.model.UserPrincipal;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
 public class UtenteController {
+
     @Autowired
     private UtenteService utenteService;
 
     @GetMapping("/")
-    public String homePage() {
+    public String homePage(Authentication authentication) {
+        // Debug per verificare l'autenticazione
+        if (authentication != null && authentication.isAuthenticated()) {
+            System.out.println("=== DEBUG AUTENTICAZIONE ===");
+            System.out.println("Utente autenticato: " + authentication.getName());
+            System.out.println("Principal type: " + authentication.getPrincipal().getClass().getName());
+            
+            // Mostra tutti i ruoli/authorities
+            System.out.println("Authorities:");
+            authentication.getAuthorities().forEach(auth -> 
+                System.out.println("  - " + auth.getAuthority())
+            );
+            
+            // Cast per accedere ai dati dell'utente
+            if (authentication.getPrincipal() instanceof UserPrincipal) {
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                System.out.println("Nome utente: " + userPrincipal.getUtente().getNome());
+                System.out.println("Email utente: " + userPrincipal.getUtente().getEmail());
+                System.out.println("Ruolo utente: " + userPrincipal.getUtente().getRuolo());
+            }
+            System.out.println("============================");
+        } else {
+            System.out.println("Nessun utente autenticato");
+        }
         return "index";
     }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
-        // Aggiungi un oggetto vuoto al modello se non è già presente
         if (!model.containsAttribute("userRegistrationDTO")) {
             model.addAttribute("userRegistrationDTO", new UserRegistrationDTO());
         }
@@ -40,17 +61,19 @@ public class UtenteController {
 
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("userRegistrationDTO") UserRegistrationDTO userRegistrationDTO,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        // Validazione personalizzata per confrontare le password
+                              BindingResult bindingResult,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        
         if (!userRegistrationDTO.getPassword().equals(userRegistrationDTO.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "error.confirmPassword",
                     "Le password non corrispondono");
         }
+        
         if (bindingResult.hasErrors()) {
             return "register.html";
         }
+        
         try {
             utenteService.registraUtente(userRegistrationDTO);
             redirectAttributes.addFlashAttribute("successMessage",
@@ -72,46 +95,5 @@ public class UtenteController {
             model.addAttribute("userLoginDTO", new UserLoginDTO());
         }
         return "login.html";
-    }
-
-    @PostMapping("/login")
-    public String loginUser(
-            @Valid @ModelAttribute("userLoginDTO") UserLoginDTO userLoginDTO,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            HttpSession session,
-            Model model) {
-        if (bindingResult.hasErrors()) {
-            // Validazione fallita (campo email o password vuoti o malformati)
-            return "login.html";
-        }
-        try {
-            // Login e ottenimento dell'utente
-            Utente utente = utenteService.loginUtente(userLoginDTO);
-            
-            // Salvataggio dell'utente nella sessione
-            session.setAttribute("utente", utente);
-            
-            redirectAttributes.addFlashAttribute("successMessage", "Login effettuato con successo!");
-            return "redirect:/";
-        } catch (EmailNotFoundException e) {
-            model.addAttribute("errorEmail", e.getMessage());
-            return "login.html";
-        } catch (InvalidPasswordException e) {
-            model.addAttribute("errorPassword", e.getMessage());
-            return "login.html";
-        }
-    }
-    
-    @PostMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        // Rimuovi l'utente dalla sessione
-        session.removeAttribute("utente");
-        
-        // Opzionale: invalidare completamente la sessione
-        session.invalidate();
-        
-        redirectAttributes.addFlashAttribute("successMessage", "Logout effettuato con successo!");
-        return "redirect:/";
     }
 }

@@ -1,125 +1,74 @@
-<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIWBooks</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #f8f5f2;
-    }
-    .header {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      background: #c53030;
-      color: #fff;
-      padding: 1rem 2rem;
-    }
-    .logo { font-size: 1.4rem; font-weight: bold; }
-    .main-title { text-align: center; font-size: 2rem; }
-    .user-info, .login-register { font-size: 0.9rem; }
-    .login-register a {
-      color: #f8f5f2;
-      text-decoration: none;
-      margin-left: 10px;
-      transition: color 0.3s;
-    }
-    .login-register a:hover { color: #e2e8f0; }
-    .logout-btn {
-      background-color: #9b2c2c;
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-    .logout-btn:hover { background-color: #822727; }
-
-    nav {
-      background: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    nav ul { list-style: none; display: flex; justify-content: center; }
-    nav li { margin: 0 1rem; }
-    nav a {
-      text-decoration: none;
-      color: #4a5568;
-      font-weight: bold;
-      padding: 0.5rem;
-      transition: background 0.3s;
-    }
-    nav a:hover {
-      background: #fee2e2;
-      border-radius: 4px;
-    }
-
-    .alert-success {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background-color: #d1fae5;
-      color: #065f46;
-      border-radius: 4px;
-      text-align: center;
-    }
-
-    .content { text-align: center; margin: 2rem auto; max-width: 800px; }
-    .content h2 { font-size: 1.8rem; margin-bottom: 1rem; color: #2d3748; }
-    .content p { font-size: 1rem; margin-bottom: 1.5rem; color: #4a5568; }
-    .image-container img {
-      max-width: 50%; height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    footer {
-      margin-top: 3rem;
-      padding: 1.5rem;
-      background: #fff;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #718096;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIWBooks</title>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">SIWBooks</div>
-    <h1 class="main-title">Benvenuto su SIWBooks</h1>
-    <div th:if="${session.utente != null}" class="user-info">
-      <span>Benvenuto, <strong th:text="${session.utente.nome}"></strong>!</span>
-      <form action="/logout" method="post" style="display:inline;">
-        <button type="submit" class="logout-btn">Logout</button>
-      </form>
-    </div>
-    <div th:if="${session.utente == null}" class="login-register">
-      <a href="/login">Login</a> |
-      <a href="/register">Registrati</a>
-    </div>
-  </header>
-  <nav>
-    <ul>
-      <li><a href="/libri">Libri</a></li>
-      <li><a href="/autori">Autori</a></li>
-    </ul>
-  </nav>
-  <main class="content">
-    <div th:if="${successMessage != null}" class="alert-success" th:text="${successMessage}"></div>
-    <h2>Esplora la nostra collezione</h2>
-    <p>Scopri nuovi libri, autori e recensioni dalla community di lettori di SIWBooks.</p>
-    <div th:if="${session.utente != null}">
-      <p>Accesso effettuato come: <strong th:text="${session.utente.nome + ' ' + session.utente.cognome}"></strong></p>
-      <p th:if="${session.utente.ruolo.name() == 'ADMIN'}">Hai accesso alle funzioni di amministrazione.</p>
-    </div>
-    <div class="image-container">
-      <img th:src="@{/assets/books.png}" alt="SIWBooks">
-    </div>
-  </main>
-  <footer>&copy; 2025 SIWBooks - Tutti i diritti riservati</footer>
+    <header class="header">
+        <div class="logo">SIWBooks</div>
+        <h1 class="main-title">Benvenuto su SIWBooks</h1>
+        
+        <!-- Utente autenticato -->
+        <div sec:authorize="isAuthenticated()" class="user-info">
+            <span>Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!</span>
+            <form action="/logout" method="post" style="display:inline;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+        
+        <!-- Utente non autenticato -->
+        <div sec:authorize="!isAuthenticated()" class="login-register">
+            <a href="/login">Login</a> |
+            <a href="/register">Registrati</a>
+        </div>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="/libri">Libri</a></li>
+            <li><a href="/autori">Autori</a></li>
+            <!-- Link solo per admin -->
+            <li sec:authorize="hasRole('ADMIN')"><a href="/admin">Area Admin</a></li>
+        </ul>
+    </nav>
+    
+    <main class="content">
+        <div th:if="${successMessage != null}" class="alert-success" th:text="${successMessage}"></div>
+        <h2>Esplora la nostra collezione</h2>
+        <p>Scopri nuovi libri, autori e recensioni dalla community di lettori di SIWBooks.</p>
+        
+        <div sec:authorize="isAuthenticated()">
+            <p>Accesso effettuato come:
+                <strong>
+                    <span sec:authentication="principal.utente.nome"></span>
+                    <span sec:authentication="principal.utente.cognome"></span>
+                </strong>
+            </p>
+            
+            <!-- Messaggio per admin -->
+            <div sec:authorize="hasRole('ADMIN')" class="admin-panel">
+                <h3>🔧 Pannello Amministrazione</h3>
+                <p><strong>Hai accesso alle funzioni di amministrazione!</strong></p>
+                <ul>
+                    <li><a href="/libri/new">Aggiungi nuovo libro</a></li>
+                    <li><a href="/autori/new">Aggiungi nuovo autore</a></li>
+                    <li><a href="/admin/users">Gestisci utenti</a></li>
+                </ul>
+            </div>
+            
+            <!-- Messaggio per utenti normali -->
+            <div sec:authorize="hasRole('USER') and !hasRole('ADMIN')" class="user-panel">
+                <p>Benvenuto! Puoi esplorare libri e autori, e lasciare recensioni.</p>
+            </div>
+        </div>
+        
+        <div class="image-container">
+            <img th:src="@{/assets/books.png}" alt="SIWBooks">
+        </div>
+    </main>
+    
 </body>
-</html> 
+</html>
