@@ -22,6 +22,10 @@ public class LibroService {
                             .toList();
     }
 
+    public Libro getLibroById(Long id) {
+        return libroRepository.findById(id).orElse(null);
+    }
+
 
 
 }

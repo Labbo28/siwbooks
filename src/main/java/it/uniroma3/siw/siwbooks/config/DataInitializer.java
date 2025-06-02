@@ -1,17 +1,35 @@
 package it.uniroma3.siw.siwbooks.config;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.uniroma3.siw.siwbooks.model.Autore;
+import it.uniroma3.siw.siwbooks.model.Immagine;
+import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.model.enums.Ruolo;
+import it.uniroma3.siw.siwbooks.repository.AutoreRepository;
+import it.uniroma3.siw.siwbooks.repository.ImmagineRepository;
+import it.uniroma3.siw.siwbooks.repository.LibroRepository;
 import it.uniroma3.siw.siwbooks.repository.UtenteRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    @Autowired
+    private AutoreRepository autoreRepository;
+
+    @Autowired
+    private LibroRepository libroRepository;
+
+    @Autowired 
+    private ImmagineRepository immagineRepository;
 
     @Autowired
     private UtenteRepository utenteRepository;
@@ -27,6 +45,62 @@ public class DataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
             e.printStackTrace();
+        }
+        
+            initBooksAndAuthors();
+        
+    }
+    private void initBooksAndAuthors() {
+        String pathAutori = "/assets/immaginiAutori/";
+        String pathLibri = "/assets/immaginiLibri/";
+        
+        // Controlla se i dati esistono già
+        if (autoreRepository.count() > 0 || libroRepository.count() > 0) {
+            System.out.println("Libri e autori già presenti nel database, saltato l'inserimento.");
+            return;
+        }
+        
+        try {
+            // 1. Crea e salva prima l'autore (senza relazioni)
+            Autore autore1 = new Autore("J.R.R.", "Tolkien", "Inglese", "1892", "1973");
+            autore1 = autoreRepository.save(autore1);
+            
+            // 2. Crea e salva il libro (senza relazioni)
+            Libro libro1 = new Libro("Il Signore degli Anelli", 1954);
+            libro1 = libroRepository.save(libro1);
+            
+            // 3. Stabilisci le relazioni usando collezioni mutabili
+            // Aggiungi il libro alla collezione di libri dell'autore
+            autore1.getLibri().add(libro1);
+            
+            // Aggiungi l'autore alla collezione di autori del libro
+            libro1.getAutori().add(autore1);
+            
+            // 4. Salva di nuovo per aggiornare le relazioni
+            autore1 = autoreRepository.save(autore1);
+            libro1 = libroRepository.save(libro1);
+            
+            // 5. Ora crea e salva le immagini (che dipendono dalle entità principali)
+            Immagine imgAutore = new Immagine("Tolkien", pathAutori + "tolkien.jpg");
+            imgAutore = immagineRepository.save(imgAutore);
+            
+            Immagine imgLibro = new Immagine("Il Signore degli Anelli", pathLibri + "signore-degli-anelli.jpeg");
+            imgLibro = immagineRepository.save(imgLibro);
+            
+            // 6. Aggiorna le entità con le immagini
+            autore1.setImmagine(imgAutore);
+            libro1.getCopertina().add(imgLibro);
+            
+            // 7. Salvataggio finale
+            autoreRepository.save(autore1);
+            libroRepository.save(libro1);
+            
+            System.out.println("Autore e libro inizializzati correttamente.");
+            
+        } catch (Exception e) {
+            System.err.println("Errore durante l'inizializzazione di autore e libro: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Rilancia l'eccezione per vedere il vero errore
         }
     }
 
@@ -52,7 +126,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Utente admin  
         createUserIfNotExists(
-            "Giulia", "Bianchi", "admin@test.com", "admin123", Ruolo.ADMIN,
+            "Labbo", "obbaL", "admin@test.com", "admin123", Ruolo.ADMIN,
             "Utente admin"
         );
 

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettagli Libro</title>
+</head>
+<body>
+    <h1 th:text="${libro.titolo}"></h1>
+    
+    <p>
+      <strong>Anno di Pubblicazione:</strong> 
+      <span th:text="${libro.annoPubblicazione}"></span>
+    </p>
+
+    <!-- Ciclo per mostrare tutte le copertine -->
+    <div>
+      <div th:each="immagine : ${libro.copertina}">
+        <img 
+          class="book-image" 
+          th:src="@{${immagine.path}}" 
+          th:alt="@{${immagine.nome}}" 
+          style="max-width: 200px; max-height: 300px; margin: 5px;"
+        />
+      </div>
+    </div>
+    <p><strong>Autori:</strong></p>
+    <nav>
+        <ul>
+            <li>
+              <a 
+                th:each="autore : ${libro.autori}" 
+                th:href="@{'/autori/' + ${autore.id}}" 
+                th:text="${autore.nome}"
+              ></a>
+            </li>            
+        </ul>
+    </nav>
+
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/libri">Libri</a></li>
+            <li><a href="/autori">Autori</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

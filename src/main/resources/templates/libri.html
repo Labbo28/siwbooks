@@ -13,6 +13,7 @@
     <ul>
         <li th:each="libro : ${libri}">
             <a th:href="@{'/libri/' + ${libro.id}}" th:text="${libro.titolo}"></a>
+            
         </li>
     </ul>
         <li th:each="libro : ${libri}">

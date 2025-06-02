@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettagli Autore</title>
+</head>
+<body>
+    <h1>
+        <span th:text="${autore.nome}"></span>
+        <span th:text="${autore.cognome}"></span>
+    </h1>
+
+    <img 
+        th:src="@{${autore.immagine.path}}"
+        th:alt="${autore.immagine.nome}"
+        style="max-width: 200px; max-height: 300px; margin: 5px;"
+    />
+
+    <p>
+        <strong>Data di Nascita:</strong>
+        <span th:text="${autore.dataNascita}"></span>
+    </p>
+
+    <div th:if="${autore.dataMorte != null}">
+        <p>
+            <strong>Data di Morte:</strong>
+            <span th:text="${autore.dataMorte}"></span>
+        </p>
+    </div>
+
+    <p>
+        <strong>Nazionalità:</strong>
+        <span th:text="${autore.nazionalita}"></span>
+    </p>
+
+    <p><strong>Libri:</strong></p>
+    <nav>
+        <ul>
+            <li th:each="libro : ${autore.libri}">
+                <a 
+                    th:href="@{'/libri/' + ${libro.id}}"
+                    th:text="${libro.titolo}"
+                ></a>
+            </li>
+        </ul>
+    </nav>
+
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/libri">Libri</a></li>
+            <li><a href="/autori">Autori</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
