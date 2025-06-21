@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nuovo Libro</title>
+  <style>
+    .autocomplete-suggestions {
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      background: #fff;
+      position: absolute;
+      width: 300px;
+    }
+    .suggestion { padding: 5px; cursor: pointer; }
+    .suggestion:hover { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Aggiungi Nuovo Libro</h1>
+  <form action="/libri/new" method="post" enctype="multipart/form-data">
+    <label>Titolo: <input type="text" name="titolo" required></label><br>
+    <label>Anno: <input type="number" name="annoPubblicazione" required></label><br>
+    <label>Copertine: <input type="file" name="fileImmagine" accept="image/*" multiple required></label><br>
+
+    <label>Autori: <input id="search" autocomplete="off"></label>
+    <div id="suggestions" class="autocomplete-suggestions"></div>
+    <input type="hidden" name="idAutore" id="ids">
+    <ul id="selected"></ul>
+
+    <button type="submit">Salva</button>
+  </form>
+
+  <script>
+    let selected = [];
+    const search = document.getElementById('search');
+    const sugg = document.getElementById('suggestions');
+    const ids = document.getElementById('ids');
+    const selList = document.getElementById('selected');
+
+    search.oninput = async e => {
+      const q = e.target.value.trim();
+      if (q.length < 2) return sugg.innerHTML = '';
+      const res = await fetch(`/api/autori/search?term=${q}`);
+      const data = await res.json();
+      sugg.innerHTML = data.map(a => `<div class="suggestion" data-id="${a.id}">${a.nome}</div>`).join('');
+    };
+
+    sugg.onclick = e => {
+      if (!e.target.matches('.suggestion')) return;
+      const id = e.target.dataset.id;
+      const nome = e.target.textContent;
+      if (selected.find(x=>x.id==id)) return;
+      selected.push({id, nome});
+      ids.value = selected.map(x=>x.id).join(',');
+      selList.innerHTML = selected.map(x=>`<li>${x.nome} <button data-id="${x.id}">×</button></li>`).join('');
+      search.value = '';
+      sugg.innerHTML = '';
+    };
+
+    selList.onclick = e => {
+      if (e.target.tagName!='BUTTON') return;
+      const id = e.target.dataset.id;
+      selected = selected.filter(x=>x.id!=id);
+      ids.value = selected.map(x=>x.id).join(',');
+      selList.innerHTML = selected.map(x=>`<li>${x.nome} <button data-id="${x.id}">×</button></li>`).join('');
+    };
+  </script>
+</body>
+</html>

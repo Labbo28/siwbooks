@@ -30,10 +30,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // OK per sviluppo
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
+                .requestMatchers("/","/libri","autori", "/register", "/login", "/css/**", "/js/**", "/images/**", "/api/**","/assets/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN") // Solo per admin
                 .requestMatchers("/libri/new", "/libri/*/edit", "/libri/*/delete").hasRole("ADMIN") // Gestione libri per admin
-                .requestMatchers("/autori/new", "/autori/*/edit", "/autori/*/delete").hasRole("ADMIN") // Gestione autori per admin
+                .requestMatchers("/autori/new","/immagini/new", "/autori/*/edit", "/autori/*/delete").hasRole("ADMIN") // Gestione autori per admin
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

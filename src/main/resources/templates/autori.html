@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autori</title>
 </head>
 <body>
     <h1>Autori</h1>
+
     <div th:if="${#lists.isEmpty(autori)}">
         <p>Non ci sono autori nel database.</p>
     </div>
+
+    <ul th:if="${!#lists.isEmpty(autori)}">
         <li th:each="autore : ${autori}">
-            <p th:href="@{'/autori/' + ${autore.id}}"  th:text="${autore.nome}"></p>
-        <li>
+            <a th:href="@{/autori/{id}(id=${autore.id})}"
+               th:text="${autore.nome} + ' ' + ${autore.cognome}">Nome Cognome</a>
+        </li>
+    </ul>
+
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
+            <li><a th:href="@{/}">Home</a></li>
         </ul>
     </nav>
-    
 </body>
 </html>

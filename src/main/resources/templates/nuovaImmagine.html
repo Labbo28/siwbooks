@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Carica Nuova Immagine</title>
+</head>
+<body>
+    <h1>Carica Nuova Immagine</h1>
+
+    <!--
+      Il th:object deve corrispondere esattamente al nome usato in model.addAttribute()
+      nel controller: “nuovaImmagine”
+    -->
+    <form th:action="@{/immagini/new}"
+          th:object="${nuovaImmagine}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <!-- NOME IMMAGINE -->
+        <div>
+            <label for="nomeImmagine">Nome Immagine:</label>
+            <input type="text"
+                   id="nomeImmagine"
+                   th:field="*{nomeImmagine}"
+                   placeholder="Es. Copertina del Signore degli Anelli"
+                   required/>
+            <div th:if="${#fields.hasErrors('nomeImmagine')}"
+                 th:errors="*{nomeImmagine}"
+                 style="color: red; font-size: 0.9em;">
+            </div>
+        </div>
+
+        <!-- FILE IMMAGINE -->
+        <div style="margin-top: 1em;">
+            <label for="fileImmagine">Seleziona File:</label>
+            <input type="file"
+                   id="fileImmagine"
+                   th:field="*{fileImmagine}"
+                   accept="image/*"
+                   required/>
+            <div th:if="${#fields.hasErrors('fileImmagine')}"
+                 th:errors="*{fileImmagine}"
+                 style="color: red; font-size: 0.9em;">
+            </div>
+        </div>
+
+        <!-- TIPO IMMAGINE -->
+        <div style="margin-top: 1em;">
+            <label for="tipoImmagine">Tipo di Immagine:</label>
+            <select id="tipoImmagine" th:field="*{tipoImmagine}" required>
+                <option th:each="t : ${T(it.uniroma3.siw.siwbooks.dto.TipoImmagine).values()}"
+                        th:value="${t}"
+                        th:text="${t}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('tipoImmagine')}"
+                 th:errors="*{tipoImmagine}"
+                 style="color: red; font-size: 0.9em;">
+            </div>
+        </div>
+
+        <!-- BOTTONE SUBMIT -->
+        <div style="margin-top: 1.5em;">
+            <button type="submit">Carica Immagine</button>
+        </div>
+    </form>
+
+    <!-- Messaggio di successo o errore -->
+    <div th:if="${successMessage != null}" style="color: green; margin-top: 1em;">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage != null}" style="color: red; margin-top: 1em;">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Link di ritorno -->
+    <p style="margin-top: 2em;">
+        <a th:href="@{/admin}">← Torna al pannello admin</a>
+    </p>
+</body>
+</html>

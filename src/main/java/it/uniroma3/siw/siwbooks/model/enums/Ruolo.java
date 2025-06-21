@@ -5,3 +5,4 @@ public enum Ruolo {
     USER,
     ADMIN,
 }
+

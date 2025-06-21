@@ -1,0 +1,16 @@
+{
+    "properties": [
+      {
+        "name": "upload.dir.libri",
+        "type": "java.lang.String",
+        "description": "Directory per il caricamento delle immagini dei libri",
+        "defaultValue": "/opt/siwbooks/uploads/immaginiLibri"
+      },
+      {
+        "name": "upload.dir.autori",
+        "type": "java.lang.String", 
+        "description": "Directory per il caricamento delle immagini degli autori",
+        "defaultValue": "/opt/siwbooks/uploads/immaginiAutori"
+      }
+    ]
+  }

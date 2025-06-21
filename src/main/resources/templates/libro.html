@@ -19,7 +19,7 @@
         <img 
           class="book-image" 
           th:src="@{${immagine.path}}" 
-          th:alt="@{${immagine.nome}}" 
+          th:alt="pisellone" 
           style="max-width: 200px; max-height: 300px; margin: 5px;"
         />
       </div>
@@ -33,7 +33,7 @@
                 th:href="@{'/autori/' + ${autore.id}}" 
                 th:text="${autore.nome}"
               ></a>
-            </li>            
+            </li>             
         </ul>
     </nav>
 

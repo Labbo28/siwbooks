@@ -16,6 +16,8 @@ import it.uniroma3.siw.siwbooks.exceptions.alreadyRegisteredException;
 import it.uniroma3.siw.siwbooks.model.UserPrincipal;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 public class UtenteController {
@@ -96,4 +98,7 @@ public class UtenteController {
         }
         return "login.html";
     }
+
+    
+    
 }

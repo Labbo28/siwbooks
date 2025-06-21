@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nuovo Autore</title>
+</head>
+<body>
+  <h1>Aggiungi Nuovo Autore</h1>
+  <form action="/autori/new" method="post" enctype="multipart/form-data">
+    <label>Nome: <input type="text" name="nome" required></label><br>
+    <label>Cognome: <input type="text" name="cognome" required></label><br>
+    <label>Nazionalità: <input type="text" name="nazionalita" required></label><br>
+    <label>Data di nascita: <input type="date" name="dataNascita" required></label><br>
+    <label>Data di morte: <input type="date" name="dataMorte"></label><br>
+    <label>Immagine: <input type="file" name="fileImmagine" accept="image/*"></label><br>
+    <button type="submit">Salva Autore</button>
+  </form>
+</body>
+</html>

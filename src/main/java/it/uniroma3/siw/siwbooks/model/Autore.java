@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
@@ -57,6 +56,15 @@ public class Autore {
         this.nazionalita = nazionalita;
         this.dataNascita = dataNascita;
         this.dataMorte = dataMorte;
+    }
+
+    public Autore(String nome, String cognome, String nazionalita, String dataNascita, String dataMorte,Immagine immagine) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.nazionalita = nazionalita;
+        this.dataNascita = dataNascita;
+        this.dataMorte = dataMorte;
+        this.immagine=immagine;
     }
     
     @Override

@@ -21,14 +21,14 @@ public class Immagine {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    private String nome;
+   
     private String path;
     
     // **Non** esistono più riferimenti a Libro o Autore qui:
     // rimuoviamo @ManyToOne verso Libro e @OneToOne verso Autore
 
     public Immagine(String nome, String path) {
-        this.nome = nome;
+       
         this.path = path;
     }
     
