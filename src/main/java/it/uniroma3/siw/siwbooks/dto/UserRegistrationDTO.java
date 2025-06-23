@@ -17,6 +17,8 @@ public class UserRegistrationDTO {
     @NotBlank(message = "L'email è obbligatoria")
     @Email(message = "Formato email non valido")
     private String email;
+    @NotBlank(message = "L'username è obbligatorio")
+    private String username;
     
     @NotBlank(message = "La password è obbligatoria")
     @Size(min = 8, message = "La password deve essere di almeno 8 caratteri")
@@ -26,6 +28,7 @@ public class UserRegistrationDTO {
     
     @NotBlank(message = "Conferma la password")
     private String confirmPassword;
+
     
     
 }

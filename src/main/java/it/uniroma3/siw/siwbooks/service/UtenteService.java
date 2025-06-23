@@ -6,6 +6,7 @@ import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.model.enums.Ruolo;
 import it.uniroma3.siw.siwbooks.repository.UtenteRepository;
 import it.uniroma3.siw.siwbooks.dto.UserRegistrationDTO;
+import it.uniroma3.siw.siwbooks.exceptions.UsernameAlreadyExistsException;
 import it.uniroma3.siw.siwbooks.exceptions.alreadyRegisteredException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -18,8 +19,12 @@ public class UtenteService {
     PasswordEncoder passwordEncoder;
 
     // Rimettere la password cifrata
-    public Utente registraUtente(UserRegistrationDTO userRegistrationDTO) throws alreadyRegisteredException {
+    public Utente registraUtente(UserRegistrationDTO userRegistrationDTO) throws alreadyRegisteredException , 
+    UsernameAlreadyExistsException {
         Utente nuovoUtente;
+        if(utenteRepository.existsByEmail(userRegistrationDTO.getUsername())) {
+            throw new alreadyRegisteredException(userRegistrationDTO.getUsername());
+        }
         // Controlla se l'email è già registrata
         if (utenteRepository.existsByEmail(userRegistrationDTO.getEmail())) {
             throw new alreadyRegisteredException(userRegistrationDTO.getEmail());
@@ -29,7 +34,8 @@ public class UtenteService {
                 userRegistrationDTO.getCognome(),
                 userRegistrationDTO.getEmail(),
                 passwordEncoder.encode(userRegistrationDTO.getPassword()),
-                Ruolo.USER
+                Ruolo.USER,
+                userRegistrationDTO.getUsername()
             );
             utenteRepository.save(nuovoUtente);
         }

@@ -23,17 +23,19 @@ public class Utente {
     private String email;
     private String password;
     private Ruolo ruolo;
+    private String username;
    
     @OneToMany(mappedBy = "utente")
     private Set <Recensione> recensioni;
 
 
-    public Utente(String nome, String cognome, String email, String password, Ruolo ruolo) {
+    public Utente(String nome, String cognome, String email, String password, Ruolo ruolo,String username) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
         this.ruolo = ruolo;
+        this.username = username; // Imposta l'username come email
     }
 
 }

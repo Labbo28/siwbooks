@@ -1,6 +1,7 @@
 package it.uniroma3.siw.siwbooks.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.uniroma3.siw.siwbooks.dto.UserRegistrationDTO;
 import it.uniroma3.siw.siwbooks.dto.UserLoginDTO;
+import it.uniroma3.siw.siwbooks.exceptions.UsernameAlreadyExistsException;
 import it.uniroma3.siw.siwbooks.exceptions.alreadyRegisteredException;
 import it.uniroma3.siw.siwbooks.model.UserPrincipal;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
@@ -80,15 +82,17 @@ public class UtenteController {
             utenteService.registraUtente(userRegistrationDTO);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Registrazione completata con successo! Ora puoi effettuare il login.");
-            return "redirect:/login";
+            
         } catch (alreadyRegisteredException e) {
             bindingResult.rejectValue("email", "error.email", e.getMessage());
-            return "register.html";
+            return "register.html";}
+            catch(UsernameAlreadyExistsException e) {
         } catch (Exception e) {
             model.addAttribute("errorMessage",
                     "Si è verificato un errore durante la registrazione. Riprova più tardi.");
             return "register.html";
         }
+        return "redirect:/login";
     }
 
     @GetMapping("/login")

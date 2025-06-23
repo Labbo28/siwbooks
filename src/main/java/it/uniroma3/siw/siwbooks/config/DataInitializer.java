@@ -120,13 +120,13 @@ public class DataInitializer implements CommandLineRunner {
         // Utente normale
         createUserIfNotExists(
             "Mario", "Rossi", "user@test.com", "password123", Ruolo.USER,
-            "Utente normale"
+            "Utente normale", "Mario1337"
         );
 
         // Utente admin  
         createUserIfNotExists(
             "Labbo", "obbaL", "admin@test.com", "admin123", Ruolo.ADMIN,
-            "Utente admin"
+            "Utente admin", "THE_GOAT_69"
         );
 
         printCredentials();
@@ -137,7 +137,7 @@ public class DataInitializer implements CommandLineRunner {
         if (!utenteRepository.existsByEmail("user@test.com")) {
             createUserIfNotExists(
                 "Mario", "Rossi", "user@test.com", "password123", Ruolo.USER,
-                "Utente normale (aggiunto)"
+                "Utente normale (aggiunto)","Mario1337"
             );
         }
 
@@ -145,18 +145,18 @@ public class DataInitializer implements CommandLineRunner {
         if (!utenteRepository.existsByEmail("admin@test.com")) {
             createUserIfNotExists(
                 "Giulia", "Bianchi", "admin@test.com", "admin123", Ruolo.ADMIN,
-                "Utente admin (aggiunto)"
+                "Utente admin (aggiunto)", "THE_GOAT_69"
             );
         }
     }
 
     private void createUserIfNotExists(String nome, String cognome, String email, 
-                                     String plainPassword, Ruolo ruolo, String description) {
+                                     String plainPassword, Ruolo ruolo, String description,String username) {
         try {
             if (!utenteRepository.existsByEmail(email)) {
                 String encodedPassword = passwordEncoder.encode(plainPassword);
                 
-                Utente utente = new Utente(nome, cognome, email, encodedPassword, ruolo);
+                Utente utente = new Utente(nome, cognome, email, encodedPassword, ruolo,username);
                 utenteRepository.save(utente);
                 
                 System.out.println(description + " creato con successo:");
