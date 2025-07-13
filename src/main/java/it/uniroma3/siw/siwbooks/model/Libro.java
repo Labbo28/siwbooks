@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,10 +43,12 @@ public class Libro {
     @JoinColumn(name = "libro_id") 
     private List<Immagine> copertina = new ArrayList<>();
     
+    @JsonIgnore
     @ManyToMany
     // (se non hai già definito la JoinTable in Autore, altrimenti specifica @JoinTable qui)
     private Set<Autore> autori = new HashSet<>();
-    
+
+    @JsonIgnore
     @OneToMany(mappedBy = "libro", fetch = FetchType.EAGER)
     private Set<Recensione> recensioni = new HashSet<>();
     

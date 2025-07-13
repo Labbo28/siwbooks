@@ -22,7 +22,7 @@ public class ApiAutoreController {
     private AutoreRepository autoreRepository;
 
     // Restituisce al massimo 10 autori il cui nome contiene il termine di ricerca
-    @GetMapping("/search")
+    @GetMapping("/cerca")
     public List<AutoreDTO> search(
             @RequestParam("term") String term) {
         return autoreRepository.findByNomeContainingIgnoreCase(term, PageRequest.of(0,10))

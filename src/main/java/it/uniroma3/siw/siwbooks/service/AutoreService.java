@@ -99,4 +99,8 @@ public class AutoreService {
         autoreRepository.save(autore);
     }
 
+   public List<Autore> cercaAutori(String query) {
+    return autoreRepository.findByNomeIgnoreCaseContainingOrCognomeIgnoreCaseContaining(query, query);
+}
+
 }

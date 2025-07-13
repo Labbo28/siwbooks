@@ -58,4 +58,9 @@ public class LibroService {
         // 3) Salva il libro nel repository
         return libroRepository.save(nuovoLibro);
     }
+
+    public List<Libro> cercaLibri(String query) {
+    return libroRepository.findByTitoloIgnoreCaseContaining(query);
+}
+
 }

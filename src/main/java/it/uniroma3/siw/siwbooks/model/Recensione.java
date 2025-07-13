@@ -1,5 +1,7 @@
 package it.uniroma3.siw.siwbooks.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,11 +30,13 @@ public class Recensione {
     @Max(5)
     @NotNull
     private int voto;
-     
+    
+   @JsonIgnore
     @ManyToOne
     @EqualsAndHashCode.Exclude
     private Utente utente;
 
+    @JsonIgnore
     @ManyToOne
     @EqualsAndHashCode.Exclude
     private Libro libro;
