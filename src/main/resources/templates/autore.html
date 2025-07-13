@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,18 +12,18 @@
         <span th:text="${autore.cognome}"></span>
     </h1>
 
-    <img 
-        th:src="@{${autore.immagine.path}}"
-       
-        style="max-width: 200px; max-height: 300px; margin: 5px;"
-    />
+    <div>
+        <img th:if="${autore.immagine != null}"
+             th:src="@{${autore.immagine.path}}"
+             alt="Immagine di [[${autore.nome}]] [[${autore.cognome}]]"
+             style="max-width:200px; max-height:300px; margin:5px;" />
+    </div>
 
     <p>
         <strong>Data di Nascita:</strong>
         <span th:text="${autore.dataNascita}"></span>
     </p>
-
-    <div th:if="${autore.dataMorte != null}">
+    <div th:if="${autore.dataMorte} != null">
         <p>
             <strong>Data di Morte:</strong>
             <span th:text="${autore.dataMorte}"></span>
@@ -34,23 +35,48 @@
         <span th:text="${autore.nazionalita}"></span>
     </p>
 
-    <p><strong>Libri:</strong></p>
-    <nav>
+    <section>
+        <p><strong>Libri:</strong></p>
         <ul>
             <li th:each="libro : ${autore.libri}">
-                <a 
-                    th:href="@{'/libri/' + ${libro.id}}"
-                    th:text="${libro.titolo}"
-                ></a>
+                <a th:href="@{/libri/{libroId}(libroId=${libro.id})}"
+                   th:text="${libro.titolo}"></a>
+                <span sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/autori/{id}/{libroId}/delete(
+                                  id=${autore.id},
+                                  libroId=${libro.id}
+                                )}">
+                        Elimina
+                    </a>
+                </span>
             </li>
         </ul>
-    </nav>
+    </section>
 
+    <!-- Pannello amministrazione -->
+    <div sec:authorize="hasRole('ADMIN')" class="admin-panel">
+        <h3>🔧 Pannello Amministrazione</h3>
+        <p><strong>Hai accesso alle funzioni di amministrazione!</strong></p>
+        <ul>
+            <li>
+                <a th:href="@{/autori/{id}/edit(id=${autore.id})}">
+                    Modifica dettagli autore
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/autori/{id}/aggiungiLibri(id=${autore.id})}">
+                    Aggiungi libri
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Navigazione principale -->
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/libri">Libri</a></li>
-            <li><a href="/autori">Autori</a></li>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/libri}">Libri</a></li>
+            <li><a th:href="@{/autori}">Autori</a></li>
         </ul>
     </nav>
 </body>

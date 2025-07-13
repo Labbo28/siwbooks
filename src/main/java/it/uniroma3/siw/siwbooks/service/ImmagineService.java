@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.siwbooks.dto.NuovaImmagineDTO;
 import it.uniroma3.siw.siwbooks.dto.TipoImmagine;
+import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Immagine;
 import it.uniroma3.siw.siwbooks.repository.ImmagineRepository;
 
@@ -71,6 +72,7 @@ public class ImmagineService {
 
             // 5) Salvo il file su disco
             fileImmagine.transferTo(filePath.toFile());
+            
             // Alternativa: Files.copy(fileImmagine.getInputStream(), filePath);
 
             // 6) Costruisco il “publicPath” che salverò nell’entità Immagine
@@ -101,4 +103,6 @@ public class ImmagineService {
         }
         return img;
     }
+
+   
 }

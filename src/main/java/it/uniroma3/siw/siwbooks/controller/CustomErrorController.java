@@ -1,3 +1,5 @@
+
+/* 
 package it.uniroma3.siw.siwbooks.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -36,3 +38,4 @@ public class CustomErrorController implements ErrorController {
         return "error";
     }
 }
+*/

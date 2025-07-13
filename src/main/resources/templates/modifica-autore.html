@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modifica Autore</title>
+</head>
+<body>
+<h1>Modifica Autore</h1>
+<form th:action="@{/autori/{id}/edit(id=${autore.id})}"
+th:object="${nuovoAutoreDTO}"
+method="post"
+enctype="multipart/form-data">
+<div>
+<label for="nome">Nome</label>
+<input type="text" id="nome" th:field="*{nome}" 
+       placeholder="Inserisci nome" />
+</div>
+<div>
+<label for="cognome">Cognome</label>
+<input type="text" id="cognome" th:field="*{cognome}" 
+       placeholder="Inserisci cognome" />
+</div>
+<div>
+<label for="nazionalita">Nazionalità</label>
+<input type="text" id="nazionalita" th:field="*{nazionalita}" 
+       placeholder="Es. Italiana" />
+</div>
+<div>
+<label for="dataNascita">Data di Nascita</label>
+<input type="date" id="dataNascita" th:field="*{dataNascita}" />
+</div>
+<div>
+<label for="dataMorte">Data di Morte</label>
+<div>
+    <input type="date" id="dataMorte" th:field="*{dataMorte}" style="flex: 1;"/>
+    
+</div>
+<small >
+    Lascia vuoto se l'autore è ancora vivo
+</small>
+</div>
+<div class="current-image">
+<p><strong>Immagine attuale:</strong></p>
+<div th:if="${autore.immagine != null}">
+<img th:src="@{${autore.immagine.path}}"
+alt="Foto di [[${autore.nome}]] [[${autore.cognome}]]"
+style="max-width:150px; max-height:200px;"/>
+</div>
+<div th:if="${autore.immagine == null}">
+<p>(Nessuna immagine associata)</p>
+</div>
+</div>
+<div>
+<label for="fileImmagine">Sostituisci immagine</label>
+<input type="file" id="fileImmagine" th:field="*{fileImmagine}" accept="image/*"/>
+<small style="color: #666; display: block; margin-top: 5px;">
+    Lascia vuoto per mantenere l'immagine attuale
+</small>
+</div>
+<div>
+<button type="submit">Salva Modifiche</button>
+<a th:href="@{/autori/{id}(id=${autore.id})}" class="cancel-link">Annulla</a>
+</div>
+</form>
+<nav>
+<a th:href="@{/autori}" class="nav-link">← Torna alla lista Autori</a>
+</nav>
+</body>
+</html>

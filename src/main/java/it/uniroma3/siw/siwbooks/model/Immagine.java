@@ -16,22 +16,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Immagine {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-   
-    private String path;
-    
-    // **Non** esistono più riferimenti a Libro o Autore qui:
-    // rimuoviamo @ManyToOne verso Libro e @OneToOne verso Autore
 
     public Immagine(String nome, String path) {
        
         this.path = path;
     }
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;   
+    private String path;
+    private boolean unlinked = false; // Indica se l'immagine è stata scollegata da un autore o libro
+    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
