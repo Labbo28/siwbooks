@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import it.uniroma3.siw.siwbooks.dto.NuovaRecensioneDTO;
 import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.service.LibroService;
+import it.uniroma3.siw.siwbooks.service.RecensioneService;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
 
 
 
 @Controller
 public class LibroController {
+    @Autowired
+    private RecensioneService recensioneService;
     @Autowired
      private LibroService libroService;
      @Autowired
@@ -40,6 +43,9 @@ public class LibroController {
         public String getLibroById(Model model, @PathVariable("id") Long id) {
             // Recupera il libro per ID e aggiungilo al modello
             Libro libro = libroService.getLibroById(id);
+            boolean canReview = !(recensioneService.isAlreadyReviewed
+            (libroService.getLibroById(id), utenteService.getCurrentUser()));
+            model.addAttribute("canReview", canReview); 
             model.addAttribute("libro", libro);
             model.addAttribute("nuovaRecensioneDTO", new NuovaRecensioneDTO());
             model.addAttribute("utente", utenteService.getCurrentUser());

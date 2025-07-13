@@ -38,7 +38,9 @@
     </nav>
 <div id="recensioni">
     <h2>Recensioni</h2>
-    <div id="formRecensione">
+   
+
+    <div id="formRecensione" th:if="${canReview}">
         <h3>Aggiungi una Recensione</h3>
         <form th:action="@{/libri/{id}/recensioni(id=${libro.id})}"
         th:object="${nuovaRecensioneDTO}" th:method="post">

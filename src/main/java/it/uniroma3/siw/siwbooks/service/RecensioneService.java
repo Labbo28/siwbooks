@@ -9,9 +9,6 @@ import it.uniroma3.siw.siwbooks.model.Recensione;
 import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.repository.RecensioneRepository;
 import jakarta.transaction.Transactional;
-
-import java.nio.file.attribute.UserPrincipal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -52,7 +49,7 @@ public class RecensioneService {
     }
 }
 
-    private boolean isAlreadyReviewed (Libro libro, Utente utente) {
+    public boolean isAlreadyReviewed (Libro libro, Utente utente) {
         return recensioneRepository.existsByLibroAndUtente(libro, utente);
     }
 
