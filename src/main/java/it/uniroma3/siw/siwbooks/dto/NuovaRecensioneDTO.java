@@ -6,6 +6,5 @@ import lombok.Data;
 public class NuovaRecensioneDTO {
     private int voto;
     private String titolo;
-    private String descrizione;
-
+    private String testo;
 }

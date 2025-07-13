@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -26,6 +27,7 @@ public class Utente {
     private String username;
    
     @OneToMany(mappedBy = "utente")
+    @EqualsAndHashCode.Exclude
     private Set <Recensione> recensioni;
 
 

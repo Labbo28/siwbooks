@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
@@ -20,17 +21,23 @@ public class Recensione {
    private Long id;
    @Nullable
    private String titolo;
-   @Lob
+   
    @Nullable
    private String testo;
     @Min(1)
     @Max(5)
     @NotNull
-    private int valutazione;
+    private int voto;
      
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     private Utente utente;
 
     @ManyToOne
+    @EqualsAndHashCode.Exclude
     private Libro libro;
+
+     public void setVoto(int voto) {
+        this.voto = voto;
+      }
 }

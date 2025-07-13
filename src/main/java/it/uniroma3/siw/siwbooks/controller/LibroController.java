@@ -7,9 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import it.uniroma3.siw.siwbooks.dto.NuovaRecensioneDTO;
 import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.service.LibroService;
+import it.uniroma3.siw.siwbooks.service.UtenteService;
 
 
 
@@ -17,7 +18,8 @@ import it.uniroma3.siw.siwbooks.service.LibroService;
 public class LibroController {
     @Autowired
      private LibroService libroService;
-
+     @Autowired
+        private UtenteService utenteService;
      @GetMapping("/libri")
      public String getAllLibri(Model model) {
          // Aggiungi i libri al modello per poterli visualizzare nella vista
@@ -39,7 +41,11 @@ public class LibroController {
             // Recupera il libro per ID e aggiungilo al modello
             Libro libro = libroService.getLibroById(id);
             model.addAttribute("libro", libro);
-            return "libro.html"; // Vista per visualizzare i dettagli del libro
+            model.addAttribute("nuovaRecensioneDTO", new NuovaRecensioneDTO());
+            model.addAttribute("utente", utenteService.getCurrentUser());
+
+            return "libro.html"; 
+            // Vista per visualizzare i dettagli del libro
             
         }
      

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,7 +45,7 @@ public class Libro {
     // (se non hai già definito la JoinTable in Autore, altrimenti specifica @JoinTable qui)
     private Set<Autore> autori = new HashSet<>();
     
-    @OneToMany(mappedBy = "libro")
+    @OneToMany(mappedBy = "libro", fetch = FetchType.EAGER)
     private Set<Recensione> recensioni = new HashSet<>();
     
     public Libro(String titolo, int annoPubblicazione) {
