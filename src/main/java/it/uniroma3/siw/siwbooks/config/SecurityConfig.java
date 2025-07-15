@@ -30,10 +30,28 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // OK per sviluppo
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/","/libri","autori", "/register", "/login", "/css/**", "/js/**", "/images/**", "/api/**","/assets/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN") // Solo per admin
-                .requestMatchers("/libri/new", "/libri/*/edit", "/libri/*/delete").hasRole("ADMIN") // Gestione libri per admin
-                .requestMatchers("/autori/new","/immagini/new", "/autori/*/edit", "/autori/*/delete").hasRole("ADMIN") // Gestione autori per admin
+                // Permetti a tutti (anche non autenticati) di accedere alle pagine pubbliche:
+                // Home, lista libri, lista autori, registrazione, login, risorse statiche (CSS, JS, immagini, assets)
+                .requestMatchers("/", "/libri", "/autori", "/register", "/login", "/css/**", "/js/**", "/images/**", "/api/**", "/assets/**").permitAll()
+                
+                // SOLO per ADMIN: Accesso alla dashboard admin e gestione (creazione/modifica/eliminazione) di libri e autori
+                                 
+                // SOLO per utenti con ruolo USER (o ADMIN se specificato con hasAnyRole): Gestione recensioni
+                // Questo copre gli endpoint POST per l'invio della recensione, modifica ed eliminazione
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/libri/new", "/libri/*/edit", "/libri/*/delete").hasRole("ADMIN")
+                .requestMatchers("/autori/new", "/immagini/new", "/autori/*/edit", "/autori/*/delete").hasRole("ADMIN")
+                // Permetti a tutti (anche non autenticati) di VEDERE il dettaglio di UN SINGOLO libro o UN SINGOLO autore
+                // NOTA BENE: Questo permette di vedere la pagina, ma la logica di Thymeleaf deciderà cosa visualizzare
+                // all'interno della pagina in base al ruolo dell'utente (es. form recensione solo per ROLE_USER)
+                .requestMatchers("/libri/{id}", "/autori/{id}").permitAll() // Dettaglio libro e autore visualizzabili da tutti
+                
+                .requestMatchers("/libri/*/recensioni", "/libri/*/recensioni/**").hasRole("USER") 
+                // Se vuoi che gli ADMIN possano anche recensire:
+                // .requestMatchers("/libri/*/recensioni", "/libri/*/recensioni/**").hasAnyRole("USER", "ADMIN")
+                
+                // Tutte le altre richieste (che non rientrano nelle regole sopra) richiedono autenticazione.
+                // Questa è una regola di "catch-all" per proteggere tutto il resto.
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -41,7 +59,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true")
-                .usernameParameter("username") // Campo email nel form
+                .usernameParameter("username")
                 .passwordParameter("password")
                 .permitAll()
             )
