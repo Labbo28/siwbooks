@@ -1,83 +1,317 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dettagli Libro</title>
-</head>
-<body>
-    <h1 th:text="${libro.titolo}"></h1>
-    
-    <p>
-      <strong>Anno di Pubblicazione:</strong> 
-      <span th:text="${libro.annoPubblicazione}"></span>
-    </p>
+<html lang="it" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-    <!-- Ciclo per mostrare tutte le copertine -->
-    <div>
-      <div th:each="immagine : ${libro.copertina}">
-        <img 
-          class="book-image" 
-          th:src="@{${immagine.path}}" 
-          th:alt="pisellone" 
-          style="max-width: 200px; max-height: 300px; margin: 5px;"
-        />
+<head th:replace="fragments/head :: head(${libro.titolo})">
+  <style>
+    /* Stili base per le stelline Font Awesome */
+    .star-rating {
+      display: inline-flex; /* Permette alle stelle di stare sulla stessa riga */
+      font-size: 1.5rem;
+      gap: 0.1rem; /* Piccolo spazio tra le stelle */
+    }
+
+    .star-rating .star {
+      color: #ccc; /* Colore predefinito delle stelle non selezionate */
+      cursor: pointer;
+      transition: color 0.2s ease-in-out, transform 0.1s ease-out; /* Transizioni per colore e scala */
+    }
+
+    /* Stile delle stelle attive (quelle che rappresentano il voto corrente) */
+    .star-rating .star.active {
+      color: gold; /* Colore oro per le stelle attive */
+    }
+
+    /* Effetto Hover quando il mouse passa sopra una singola stella */
+    .star-rating:not(.clicked) .star:hover,
+    .star-rating:not(.clicked) .star:hover ~ .star {
+      color: gold; /* Colora d'oro la stella e le precedenti */
+      transform: scale(1.1); /* Inggrandisce leggermente la stella "hoverata" */
+    }
+
+    /* Stile per le stelle visualizzate (non cliccabili) */
+    .rating-stars .star-icon {
+        font-size: 1.2rem; /* Leggermente più piccole per la visualizzazione */
+        margin-right: 2px; /* Piccolo spazio tra le icone */
+    }
+    .rating-stars .star-icon.filled {
+        color: gold; /* Stelle piene oro */
+    }
+    .rating-stars .star-icon.empty {
+        color: #ccc; /* Stelle vuote grigie */
+    }
+  </style>
+  </head>
+
+<body class="bg-light">
+  <header class="header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a th:href="@{/}" class="logo"><i class="fas fa-book"></i> SIWBooks</a>
+      <div sec:authorize="!isAuthenticated()" class="login-register">
+        <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Registrati</a>
+      </div>
+      <div sec:authorize="isAuthenticated()" class="user-info">
+        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!
+        <form th:action="@{/logout}" method="post" class="d-inline ms-3">
+          <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
       </div>
     </div>
-    <p><strong>Autori:</strong></p>
-    <nav>
-        <ul>
-            <li>
-              <a 
-                th:each="autore : ${libro.autori}" 
-                th:href="@{'/autori/' + ${autore.id}}" 
-                th:text="${autore.nome}"
-              ></a>
-            </li>             
-        </ul>
-    </nav>
-<div id="recensioni">
-    <h2>Recensioni</h2>
-   
+  </header>
 
-    <div id="formRecensione" th:if="${canReview}">
-        <h3>Aggiungi una Recensione</h3>
-        <form th:action="@{/libri/{id}/recensioni(id=${libro.id})}"
-        th:object="${nuovaRecensioneDTO}" th:method="post">
-        <label for="voto">Voto (1-5):</label>
-        <input type="number" id="voto" name="voto" min="1" max="5" required>
-        <label for="titolo">Titolo:</label>
-        <input type="text" id="titolo" name="titolo" required>  
-        <label for="testo">Testo:</label>
-        <textarea id="testo" name="testo" rows="4" required></textarea>
-        <button type="submit">Aggiungi Recensione</button>
-    </form>
+  <nav class="main-nav">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a th:href="@{/}"><i class="fas fa-home"></i> Home</a></li>
+        <li><a th:href="@{/libri}"><i class="fas fa-book"></i> Libri</a></li>
+        <li><a th:href="@{/autori}"><i class="fas fa-user-edit"></i> Autori</a></li>
+        <li sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/admin}"><i class="fas fa-cog"></i> Admin</a>
+        </li>
+      </ul>
     </div>
+  </nav>
 
-    <div th:if="${libro.recensioni.isEmpty()}">
-        <p>Non ci sono recensioni per questo libro.</p>
-    </div>
-    <div th:each="recensione : ${libro.recensioni}">
-        <div class="recensione">
-            <p><strong>Voto:</strong> <span th:text="${recensione.voto}"></span></p>
-            <p><strong>Titolo:</strong> <span th:text="${recensione.titolo}"></span></p>
-            <p><strong>Testo:</strong> <span th:text="${recensione.testo}"></span></p>
-            <p><strong>Utente:</strong>
-                <span th:if="${recensione.utente != null}"
-                      th:text="${recensione.utente.nome + ' ' + recensione.utente.cognome}"></span>
-                <span th:unless="${recensione.utente != null}">Utente sconosciuto</span>
-            </p>
-            
-              
+  <main class="main-content py-5">
+    <div class="container" style="max-width:800px;">
+
+      <div class="content-card text-center mb-5">
+        <h1 th:text="${libro.titolo}">Titolo</h1>
+        <p class="mb-2">
+          <i class="fas fa-calendar-alt"></i>
+          <span th:text="${libro.annoPubblicazione}">Anno</span>
+        </p>
+        <p>
+          <i class="fas fa-star"></i>
+          <span th:text="${#numbers.formatDecimal(libro.getMediaRecensioni(), 1, 1)}">Voto</span>
+        </p>
+      </div>
+
+      <div class="image-showcase mb-5 d-flex flex-wrap justify-content-center gap-3">
+        <div th:each="img : ${libro.copertina}">
+          <img th:src="@{${img.path}}" th:alt="${libro.titolo}" class="rounded" style="max-width:200px;">
         </div>
+      </div>
+
+      <section class="content-card mb-5">
+        <h3><i class="fas fa-user-edit"></i> Autori</h3>
+        <div class="d-flex flex-wrap gap-2">
+          <a th:each="aut : ${libro.autori}" th:href="@{/autori/{id}(id=${aut.id})}" class="btn btn-outline-secondary">
+            <i class="fas fa-user"></i> <span th:text="${aut.nome + ' ' + aut.cognome}"></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="content-card mb-5">
+        <h3><i class="fas fa-comments"></i> Recensioni</h3>
+
+        <div th:if="${myReview != null}" class="mb-4">
+          <div id="myReviewDisplay">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <strong th:text="${myReview.titolo}"></strong>
+                <div class="rating-stars d-inline-block ms-2">
+                  <i th:each="i : ${#numbers.sequence(1, 5)}"
+                     th:classappend="${i <= myReview.voto} ? 'fas fa-star star-icon filled' : 'far fa-star star-icon empty'"></i>
+                </div>
+                <span class="rating-number ms-1" th:text="${myReview.voto} + '/5'"></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button id="editBtn" type="button" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Modifica</button>
+                <form th:action="@{/libri/{id}/recensioni/elimina(id=${libro.id})}" method="post">
+                  <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Elimina</button>
+                </form>
+              </div>
+            </div>
+            <p th:text="${myReview.testo}"></p>
+          </div>
+          <div id="myReviewForm" class="d-none">
+            <form th:action="@{/libri/{id}/recensioni/modifica(id=${libro.id})}" th:object="${modificaRecensioneDTO}" method="post">
+              <div class="form-group mb-2">
+                <label for="editVoto"><i class="fas fa-star"></i> Voto</label>
+                <div class="star-rating" id="editStarRating">
+                  <i class="fas fa-star star" data-value="1"></i>
+                  <i class="fas fa-star star" data-value="2"></i>
+                  <i class="fas fa-star star" data-value="3"></i>
+                  <i class="fas fa-star star" data-value="4"></i>
+                  <i class="fas fa-star star" data-value="5"></i>
+                </div>
+                <p>Hai selezionato: <strong id="editSelectedStars" th:text="${myReview.voto}"></strong> stelle</p>
+                <input type="hidden" id="editVoto" name="voto" th:value="${myReview.voto}" required>
+              </div>
+              <div class="form-group mb-3">
+                <label for="editTitolo"><i class="fas fa-heading"></i> Titolo</label>
+                <input id="editTitolo" name="titolo" type="text" class="form-control" th:value="${myReview.titolo}" required>
+              </div>
+              <div class="form-group mb-4">
+                <label for="editTesto"><i class="fas fa-edit"></i> Recensione</label>
+                <textarea id="editTesto" name="testo" rows="4" class="form-control" required th:text="${myReview.testo}"></textarea>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salva</button>
+                <button type="button" id="cancelBtn" class="btn btn-secondary"><i class="fas fa-times"></i> Annulla</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div th:if="${canReview}" class="review-form mb-4">
+          <h4>Lascia la tua recensione</h4>
+          <form th:action="@{/libri/{id}/recensioni(id=${libro.id})}" th:object="${nuovaRecensioneDTO}" method="post">
+            <div class="form-group mb-2">
+              <label for="voto"><i class="fas fa-star"></i> Voto</label>
+              <div class="star-rating" id="starRating">
+                <i class="fas fa-star star" data-value="1"></i>
+                <i class="fas fa-star star" data-value="2"></i>
+                <i class="fas fa-star star" data-value="3"></i>
+                <i class="fas fa-star star" data-value="4"></i>
+                <i class="fas fa-star star" data-value="5"></i>
+              </div>
+              <p>Hai selezionato: <strong id="selectedStars">5</strong> stelle</p>
+              <input type="hidden" id="voto" name="voto" value="5" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="titoloRec"><i class="fas fa-heading"></i> Titolo</label>
+              <input id="titoloRec" name="titolo" type="text" class="form-control" placeholder="Titolo recensione…" required>
+            </div>
+            <div class="form-group mb-4">
+              <label for="testoRec"><i class="fas fa-edit"></i> Recensione</label>
+              <textarea id="testoRec" name="testo" rows="4" class="form-control" placeholder="La tua opinione…" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Pubblica</button>
+          </form>
+        </div>
+
+        <div th:each="rec : ${recensioni}" th:if="${rec.utente != utente}" class="review-card mb-3">
+          <div class="review-rating mb-2 d-flex align-items-center gap-2">
+            <div class="rating-stars">
+              <i th:each="i : ${#numbers.sequence(1, 5)}"
+                 th:classappend="${i <= rec.voto} ? 'fas fa-star star-icon filled' : 'far fa-star star-icon empty'"></i>
+            </div>
+            <span class="rating-number" th:text="${rec.voto} + '/5'"></span>
+          </div>
+          <h5 th:text="${rec.titolo}">Titolo</h5>
+          <p th:text="${rec.testo}">Testo</p>
+          <footer class="text-end fst-italic">
+            – <span th:if="${rec.utente}" th:text="${rec.utente.nome + ' ' + rec.utente.cognome}">Utente</span>
+            <span th:unless="${rec.utente}">Anonimo</span>
+          </footer>
+        </div>
+      </section>
+
+      <div class="text-center">
+        <a th:href="@{/libri}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Torna a Libri</a>
+      </div>
     </div>
-</div>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/libri">Libri</a></li>
-            <li><a href="/autori">Autori</a></li>
-        </ul>
-    </nav>
+  </main>
+
+  <footer class="footer">
+    <div class="container text-center">&copy; 2025 SIWBooks</div>
+  </footer>
+
+  <script>
+    function setupStarRating(containerId, inputId, displayId, initial) {
+      const starContainer = document.getElementById(containerId);
+      const stars = starContainer.querySelectorAll('.star');
+      const input = document.getElementById(inputId);
+      const display = document.getElementById(displayId);
+      let currentRating = parseInt(initial, 10) || 0;
+
+      // Funzione per aggiornare la visualizzazione delle stelle
+      // Usa Font Awesome: fas (solido) per stelle attive, far (regolare) per stelle vuote
+      function updateStarsVisual(ratingToDisplay) {
+        stars.forEach((star, idx) => {
+          if (idx < ratingToDisplay) {
+            star.classList.remove('far'); // Rimuove stella vuota
+            star.classList.add('fas');   // Aggiunge stella piena
+            star.style.color = 'gold';   // Colore oro
+          } else {
+            star.classList.remove('fas'); // Rimuove stella piena
+            star.classList.add('far');   // Aggiunge stella vuota
+            star.style.color = '#ccc';   // Colore grigio
+          }
+        });
+      }
+
+      // Inizializza lo stato visuale delle stelle al caricamento
+      updateStarsVisual(currentRating);
+      display.textContent = currentRating;
+
+      // Gestione hover: mostra il voto potenziale
+      starContainer.addEventListener('mouseover', (event) => {
+        if (!starContainer.classList.contains('clicked')) { // Applica hover solo se non è stato cliccato
+          const hoveredStar = event.target.closest('.star');
+          if (hoveredStar) {
+            const hoverValue = parseInt(hoveredStar.dataset.value, 10);
+            updateStarsVisual(hoverValue);
+            display.textContent = hoverValue;
+          }
+        }
+      });
+
+      // Gestione mouseleave: torna al voto selezionato
+      starContainer.addEventListener('mouseleave', () => {
+        if (!starContainer.classList.contains('clicked')) {
+          updateStarsVisual(currentRating); // Torna al voto effettivo
+          display.textContent = currentRating;
+        }
+      });
+
+      // Gestione click: imposta il voto definitivo
+      stars.forEach((star) => {
+        star.addEventListener('click', () => {
+          const clickedValue = parseInt(star.dataset.value, 10);
+          currentRating = clickedValue; // Aggiorna il voto selezionato
+          input.value = currentRating;  // Aggiorna il valore dell'input nascosto
+          display.textContent = currentRating; // Aggiorna il testo visualizzato
+          updateStarsVisual(currentRating); // Aggiorna la visualizzazione delle stelle
+
+          // Aggiungi una classe per indicare che un voto è stato selezionato
+          // Questo disabilita gli effetti hover finché non si resetta (es. modifica)
+          starContainer.classList.add('clicked');
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inizializzazione per il form di nuova recensione
+      if (document.getElementById('starRating')) {
+        setupStarRating('starRating', 'voto', 'selectedStars', 5); // Default a 5 stelle per la nuova recensione
+      }
+      // Inizializzazione per il form di modifica recensione
+      if (document.getElementById('editStarRating')) {
+        const initialEditVoto = document.getElementById('editVoto').value;
+        setupStarRating('editStarRating', 'editVoto', 'editSelectedStars', initialEditVoto);
+      }
+
+      // Gestione bottoni Modifica/Annulla per la propria recensione
+      document.getElementById('editBtn')?.addEventListener('click', () => {
+        document.getElementById('myReviewDisplay').classList.add('d-none');
+        document.getElementById('myReviewForm').classList.remove('d-none');
+        // Rimuovi la classe 'clicked' quando si passa alla modalità di modifica
+        // Questo riattiva gli effetti hover per la selezione del voto
+        const editStarContainer = document.getElementById('editStarRating');
+        if (editStarContainer) {
+            editStarContainer.classList.remove('clicked');
+        }
+      });
+
+      document.getElementById('cancelBtn')?.addEventListener('click', () => {
+        document.getElementById('myReviewForm').classList.add('d-none');
+        document.getElementById('myReviewDisplay').classList.remove('d-none');
+        
+        // Ripristina il voto visualizzato alla sua valore originale se annullato
+        const originalVoto = document.getElementById('editVoto').value;
+        const editStarContainer = document.getElementById('editStarRating');
+        if (editStarContainer) {
+            // Re-inizializza il setup per ripristinare correttamente lo stato visuale
+            setupStarRating('editStarRating', 'editVoto', 'editSelectedStars', originalVoto);
+            editStarContainer.classList.add('clicked'); // Imposta come "cliccato" per disattivare hover fino a prossima modifica
+        }
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

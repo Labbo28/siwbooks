@@ -1,19 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Nuovo Autore</title>
-</head>
-<body>
-  <h1>Aggiungi Nuovo Autore</h1>
-  <form action="/autori/new" method="post" enctype="multipart/form-data">
-    <label>Nome: <input type="text" name="nome" required></label><br>
-    <label>Cognome: <input type="text" name="cognome" required></label><br>
-    <label>Nazionalità: <input type="text" name="nazionalita" required></label><br>
-    <label>Data di nascita: <input type="date" name="dataNascita" required></label><br>
-    <label>Data di morte: <input type="date" name="dataMorte"></label><br>
-    <label>Immagine: <input type="file" name="fileImmagine" accept="image/*"></label><br>
-    <button type="submit">Salva Autore</button>
-  </form>
-</body>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/head :: head('SIWBooks – Nuovo Autore')"></head>
+  <body class="bg-light">
+    <header class="header">…</header>
+    <nav class="main-nav">…</nav>
+
+    <main class="main-content py-5">
+      <div class="container" style="max-width:600px;">
+        <div class="content-card">
+          <h2 class="mb-4">Aggiungi Nuovo Autore</h2>
+          <form th:action="@{/autori/new}" method="post" enctype="multipart/form-data">
+            <div class="form-group mb-3">
+              <label>Nome</label>
+              <input name="nome" type="text" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label>Cognome</label>
+              <input name="cognome" type="text" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label>Nazionalità</label>
+              <input name="nazionalita" type="text" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label>Data di nascita</label>
+              <input name="dataNascita" type="date" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label>Data di morte (opzionale)</label>
+              <input name="dataMorte" type="date" class="form-control">
+            </div>
+            <div class="form-group mb-4">
+              <label>Immagine (opzionale)</label>
+              <input name="fileImmagine" type="file" class="form-control" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salva Autore</button>
+            <a th:href="@{/autori}" class="btn btn-secondary ms-2"><i class="fas fa-arrow-left"></i> Annulla</a>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">…</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

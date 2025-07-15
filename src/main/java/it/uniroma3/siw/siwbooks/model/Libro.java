@@ -82,4 +82,20 @@ public class Libro {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    /**
+     * Calcola e restituisce la media dei voti delle recensioni del libro.
+     * Restituisce 0.0 se non ci sono recensioni per evitare divisioni per zero.
+     * @return La media dei voti come double.
+     */
+    public double getMediaRecensioni(){
+        if (this.recensioni == null || this.recensioni.isEmpty()) {
+            return 0.0; // Restituisce 0.0 se non ci sono recensioni
+        }
+        double media = this.recensioni.stream()
+            .mapToInt(Recensione::getVoto)
+            .average()
+            .orElse(0.0); // Se per qualche motivo lo stream è vuoto (es. dopo filtro)
+        return media;
+    }
 }

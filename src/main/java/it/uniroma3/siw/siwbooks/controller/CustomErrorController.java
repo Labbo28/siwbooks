@@ -1,5 +1,5 @@
 
-/* 
+
 package it.uniroma3.siw.siwbooks.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -26,11 +26,17 @@ public class CustomErrorController implements ErrorController {
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 // Aggiungi eventuali attributi al modello
                 model.addAttribute("errorMessage", "La pagina richiesta non è stata trovata");
-                return "error-404";
+                return "error/error-404";
             } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                return "error-500";
+                return "error/error-500";
             } else if (statusCode == HttpStatus.FORBIDDEN.value()) {
-                return "error-403";
+                return "error/error-403";
+            }
+            else if (statusCode == HttpStatus.BAD_REQUEST.value()) {
+                return "error/error-400";
+            }
+            else if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
+                return "error/error-401";
             }
         }
         
@@ -38,4 +44,3 @@ public class CustomErrorController implements ErrorController {
         return "error";
     }
 }
-*/

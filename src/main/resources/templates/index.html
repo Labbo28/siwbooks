@@ -1,74 +1,80 @@
-<!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIWBooks</title>
-</head>
-<body>
-    <header class="header">
-        <div class="logo">SIWBooks</div>
-        <h1 class="main-title">Benvenuto su SIWBooks</h1>
-        
-        <!-- Utente autenticato -->
-        <div sec:authorize="isAuthenticated()" class="user-info">
-            <span>Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!</span>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit" class="logout-btn">Logout</button>
-            </form>
+<th:block th:replace="fragments/head :: head(pageTitle='SIWBooks – Home')"/>
+
+<header class="header">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a th:href="@{/}" class="logo"><i class="fas fa-book"></i> SIWBooks</a>
+    <div class="user-info" sec:authorize="isAuthenticated()">
+      <i class="fas fa-user"></i>
+      Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!
+      <form th:action="@{/logout}" method="post" class="d-inline ms-3">
+        <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </form>
+    </div>
+    <div class="login-register" sec:authorize="!isAuthenticated()">
+      <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+      <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Registrati</a>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="container">
+    <ul class="nav-list">
+      <li><a th:href="@{/}"><i class="fas fa-home"></i> Home</a></li>
+      <li><a th:href="@{/libri}"><i class="fas fa-book"></i> Libri</a></li>
+      <li><a th:href="@{/autori}"><i class="fas fa-user-edit"></i> Autori</a></li>
+      <li sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/admin}"><i class="fas fa-cog"></i> Area Admin</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero-section">
+  <div class="container">
+    <h1><i class="fas fa-book-open"></i> Benvenuto su SIWBooks</h1>
+    <p>La tua libreria digitale per scoprire nuovi libri, autori e condividere recensioni</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a th:href="@{/libri}" class="btn btn-primary btn-lg"><i class="fas fa-book"></i> Esplora i Libri</a>
+      <a th:href="@{/autori}" class="btn btn-secondary btn-lg"><i class="fas fa-users"></i> Scopri gli Autori</a>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Cosa puoi fare su SIWBooks</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="feature-card">
+          <i class="fas fa-book feature-icon"></i>
+          <h3>Catalogo Completo</h3>
+          <p>Esplora una vasta collezione di libri di tutti i generi</p>
         </div>
-        
-        <!-- Utente non autenticato -->
-        <div sec:authorize="!isAuthenticated()" class="login-register">
-            <a href="/login">Login</a> |
-            <a href="/register">Registrati</a>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="feature-card">
+          <i class="fas fa-star feature-icon"></i>
+          <h3>Recensioni</h3>
+          <p>Leggi e scrivi recensioni per condividere le tue opinioni</p>
         </div>
-    </header>
-    
-    <nav>
-        <ul>
-            <li><a href="/libri">Libri</a></li>
-            <li><a href="/autori">Autori</a></li>
-            <!-- Link solo per admin -->
-            <li sec:authorize="hasRole('ADMIN')"><a href="/admin">Area Admin</a></li>
-        </ul>
-    </nav>
-    
-    <main class="content">
-        <div th:if="${successMessage != null}" class="alert-success" th:text="${successMessage}"></div>
-        <h2>Esplora la nostra collezione</h2>
-        <p>Scopri nuovi libri, autori e recensioni dalla community di lettori di SIWBooks.</p>
-        
-        <div sec:authorize="isAuthenticated()">
-            <p>Accesso effettuato come:
-                <strong>
-                    <span sec:authentication="principal.utente.nome"></span>
-                    <span sec:authentication="principal.utente.cognome"></span>
-                </strong>
-            </p>
-            
-            <!-- Messaggio per admin -->
-            <div sec:authorize="hasRole('ADMIN')" class="admin-panel">
-                <h3>🔧 Pannello Amministrazione</h3>
-                <p><strong>Hai accesso alle funzioni di amministrazione!</strong></p>
-                <ul>
-                    <li><a href="/libri/new">Aggiungi nuovo libro</a></li>
-                    <li><a href="/autori/new">Aggiungi nuovo autore</a></li>
-                    <li><a href="/immagini/new">Gestisci utenti</a></li>
-                </ul>
-            </div>
-            
-            <!-- Messaggio per utenti normali -->
-            <div sec:authorize="hasRole('USER') and !hasRole('ADMIN')" class="user-panel">
-                <p>Benvenuto! Puoi esplorare libri e autori, e lasciare recensioni.</p>
-            </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="feature-card">
+          <i class="fas fa-users feature-icon"></i>
+          <h3>Autori</h3>
+          <p>Scopri biografie e opere dei tuoi autori preferiti</p>
         </div>
-        
-        <div class="image-container" >
-            <img th:src="@{/assets/books.png}" alt="SIWBooks">
-        </div>
-    </main>
-    
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container text-center">
+    <p>&copy; 2025 SIWBooks. Tutti i diritti riservati.</p>
+  </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

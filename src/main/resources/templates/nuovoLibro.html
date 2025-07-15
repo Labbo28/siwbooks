@@ -1,71 +1,84 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Nuovo Libro</title>
-  <style>
-    .autocomplete-suggestions {
-      border: 1px solid #ccc;
-      max-height: 150px;
-      overflow-y: auto;
-      background: #fff;
-      position: absolute;
-      width: 300px;
-    }
-    .suggestion { padding: 5px; cursor: pointer; }
-    .suggestion:hover { background: #eee; }
-  </style>
-</head>
-<body>
-  <h1>Aggiungi Nuovo Libro</h1>
-  <form action="/libri/new" method="post" enctype="multipart/form-data">
-    <label>Titolo: <input type="text" name="titolo" required></label><br>
-    <label>Anno: <input type="number" name="annoPubblicazione" required></label><br>
-    <label>Copertine: <input type="file" name="fileImmagine" accept="image/*" multiple required></label><br>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/head :: head('SIWBooks – Nuovo Libro')"></head>
+  <body class="bg-light">
+    <header class="header">…</header>
+    <nav class="main-nav">…</nav>
 
-    <label>Autori: <input id="search" autocomplete="off"></label>
-    <div id="suggestions" class="autocomplete-suggestions"></div>
-    <input type="hidden" name="idAutore" id="ids">
-    <ul id="selected"></ul>
-    <div><h5>non riesci a trovare l'autore ?</h5><span><a href="/autori/new">aggiungi autore</a></span></div>
+    <main class="main-content py-5">
+      <div class="container" style="max-width:700px;">
+        <div class="content-card">
+          <h2 class="mb-4">Aggiungi Nuovo Libro</h2>
+          <form th:action="@{/libri/new}" method="post" enctype="multipart/form-data">
+            <div class="form-group mb-3">
+              <label for="titolo">Titolo</label>
+              <input id="titolo" name="titolo" type="text" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="anno">Anno Pubblicazione</label>
+              <input id="anno" name="annoPubblicazione" type="number" class="form-control" required>
+            </div>
+            <div class="form-group mb-3">
+              <label>Copertine</label>
+              <input name="fileImmagine" type="file" class="form-control" accept="image/*" multiple required>
+            </div>
 
-    <button type="submit">Salva</button>
-  </form>
+            <div class="form-group mb-3 position-relative">
+              <label>Autori</label>
+              <input id="search" type="text" class="form-control" autocomplete="off" placeholder="Cerca autore…">
+              <div id="suggestions" class="autocomplete-suggestions"></div>
+            </div>
+            <input type="hidden" name="idAutore" id="ids">
+            <ul id="selected" class="mb-3"></ul>
+            <p>Non trovi l’autore? <a th:href="@{/autori/new}">Aggiungilo</a></p>
 
-  <script>
-    let selected = [];
-    const search = document.getElementById('search');
-    const sugg = document.getElementById('suggestions');
-    const ids = document.getElementById('ids');
-    const selList = document.getElementById('selected');
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salva Libro</button>
+            <a th:href="@{/libri}" class="btn btn-secondary ms-2"><i class="fas fa-arrow-left"></i> Annulla</a>
+          </form>
+        </div>
+      </div>
+    </main>
 
-    search.oninput = async e => {
-      const q = e.target.value.trim();
-      if (q.length < 2) return sugg.innerHTML = '';
-      const res = await fetch(`/api/autori/cerca?term=${q}`);
-      const data = await res.json();
-      sugg.innerHTML = data.map(a => `<div class="suggestion" data-id="${a.id}">${a.nome}</div>`).join('');
-    };
+    <footer class="footer">…</footer>
+    <script>
+      let selected = [];
+      const search = document.getElementById('search'),
+            sugg   = document.getElementById('suggestions'),
+            ids    = document.getElementById('ids'),
+            selList= document.getElementById('selected');
 
-    sugg.onclick = e => {
-      if (!e.target.matches('.suggestion')) return;
-      const id = e.target.dataset.id;
-      const nome = e.target.textContent;
-      if (selected.find(x=>x.id==id)) return;
-      selected.push({id, nome});
-      ids.value = selected.map(x=>x.id).join(',');
-      selList.innerHTML = selected.map(x=>`<li>${x.nome} <button data-id="${x.id}">×</button></li>`).join('');
-      search.value = '';
-      sugg.innerHTML = '';
-    };
+      search.oninput = async e => {
+        const q = e.target.value.trim();
+        if (q.length < 2) return sugg.innerHTML = '';
+        const res = await fetch(`/api/autori/cerca?term=${q}`);
+        const data = await res.json();
+        sugg.innerHTML = data.map(a =>
+          `<div class="suggestion" data-id="${a.id}">${a.nome} ${a.cognome}</div>`
+        ).join('');
+      };
 
-    selList.onclick = e => {
-      if (e.target.tagName!='BUTTON') return;
-      const id = e.target.dataset.id;
-      selected = selected.filter(x=>x.id!=id);
-      ids.value = selected.map(x=>x.id).join(',');
-      selList.innerHTML = selected.map(x=>`<li>${x.nome} <button data-id="${x.id}">×</button></li>`).join('');
-    };
-  </script>
-</body>
+      sugg.onclick = e => {
+        if (!e.target.matches('.suggestion')) return;
+        const { id } = e.target.dataset, nome = e.target.textContent;
+        if (selected.find(x=>x.id==id)) return;
+        selected.push({ id, nome });
+        ids.value = selected.map(x=>x.id).join(',');
+        selList.innerHTML = selected.map(x=>
+          `<li>${x.nome} <button data-id="${x.id}" class="btn-close btn-close-white btn-sm"></button></li>`
+        ).join('');
+        search.value = ''; sugg.innerHTML = '';
+      };
+
+      selList.onclick = e => {
+        if (!e.target.matches('button')) return;
+        const id = e.target.dataset.id;
+        selected = selected.filter(x=>x.id!=id);
+        ids.value = selected.map(x=>x.id).join(',');
+        selList.innerHTML = selected.map(x=>
+          `<li>${x.nome} <button data-id="${x.id}" class="btn-close btn-close-white btn-sm"></button></li>`
+        ).join('');
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

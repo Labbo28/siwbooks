@@ -53,4 +53,31 @@ public class RecensioneService {
         return recensioneRepository.existsByLibroAndUtente(libro, utente);
     }
 
+    public Recensione getRecensioneByLibroAndUtente(Libro libro, Utente utente) {
+        return recensioneRepository.findByLibroAndUtente(libro, utente).orElse(null);
+    }
+
+    public void eliminaRecensione(Long libroId) {
+       Libro libro = libroService.getLibroById(libroId);
+       Utente currentUser = utenteService.getCurrentUser();
+       Recensione recensione = recensioneRepository.findByLibroAndUtente(libro, currentUser).orElseThrow();
+       recensioneRepository.delete(recensione);
+
+               
+    }
+
+   public void modificaRecensione(Long libroId, NuovaRecensioneDTO modificaRecensioneDTO) {
+    Utente currentUser = utenteService.getCurrentUser();
+    Libro libro = libroService.getLibroById(libroId);
+    
+    Recensione esistente = getRecensioneByLibroAndUtente(libro, currentUser);
+    if (esistente != null) {
+        esistente.setVoto(modificaRecensioneDTO.getVoto());
+        esistente.setTitolo(modificaRecensioneDTO.getTitolo());
+        esistente.setTesto(modificaRecensioneDTO.getTesto());
+        
+        recensioneRepository.save(esistente);
+    }
+}
+
 }

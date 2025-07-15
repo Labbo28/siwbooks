@@ -18,6 +18,8 @@ import it.uniroma3.siw.siwbooks.service.LibroService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -34,6 +36,11 @@ public class AdminController {
     @Autowired 
     AutoreService autoreService;
 
+    @GetMapping("/admin")
+    public String getAdminPanel() {
+        return "adminPanel";
+    }
+    
 
     @GetMapping("/libri/new")
     public String getNewBookForm(Model model) {

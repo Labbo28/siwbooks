@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('401 Unauthorized')">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .error-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #ffc107; /* Bootstrap warning color */
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 1.8rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .error-description {
+            font-size: 1.1rem;
+            color: #777;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a th:href="@{/}" class="logo"><i class="fas fa-book"></i> SIWBooks</a>
+            </div>
+    </header>
+
+    <main class="error-container">
+        <div class="error-code">401</div>
+        <div class="error-message">Accesso Non Autorizzato</div>
+        <p class="error-description">
+            Per accedere a questa risorsa, devi effettuare il login.
+            Se non hai un account, puoi registrarti.
+        </p>
+        <div class="d-flex gap-3">
+            <a th:href="@{/login}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Accedi</a>
+            <a th:href="@{/register}" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Registrati</a>
+            <a th:href="@{/}" class="btn btn-outline-secondary"><i class="fas fa-home"></i> Torna alla Home</a>
+        </div>
+    </main>
+
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
