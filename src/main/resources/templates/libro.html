@@ -52,7 +52,7 @@
         <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Registrati</a>
       </div>
       <div sec:authorize="isAuthenticated()" class="user-info">
-        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!
+        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.username"></strong>!
         <form th:action="@{/logout}" method="post" class="d-inline ms-3">
           <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </form>
@@ -194,7 +194,7 @@
           <h5 th:text="${rec.titolo}">Titolo</h5>
           <p th:text="${rec.testo}">Testo</p>
           <footer class="text-end fst-italic">
-            – <span th:if="${rec.utente}" th:text="${rec.utente.nome + ' ' + rec.utente.cognome}">Utente</span>
+            – <span th:if="${rec.utente}" th:text="${rec.utente.username}">Utente</span>
             <span th:unless="${rec.utente}">Anonimo</span>
           </footer>
         </div>

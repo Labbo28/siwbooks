@@ -46,7 +46,7 @@ public class SecurityConfig {
                 // all'interno della pagina in base al ruolo dell'utente (es. form recensione solo per ROLE_USER)
                 .requestMatchers("/libri/{id}", "/autori/{id}").permitAll() // Dettaglio libro e autore visualizzabili da tutti
                 
-                .requestMatchers("/libri/*/recensioni", "/libri/*/recensioni/**").hasRole("USER") 
+                .requestMatchers("/libri/*/recensioni", "/libri/*/recensioni/**").hasAnyRole("USER", "ADMIN")
                 // Se vuoi che gli ADMIN possano anche recensire:
                 // .requestMatchers("/libri/*/recensioni", "/libri/*/recensioni/**").hasAnyRole("USER", "ADMIN")
                 

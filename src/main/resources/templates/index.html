@@ -5,7 +5,7 @@
     <a th:href="@{/}" class="logo"><i class="fas fa-book"></i> SIWBooks</a>
     <div class="user-info" sec:authorize="isAuthenticated()">
       <i class="fas fa-user"></i>
-      Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!
+      Benvenuto, <strong sec:authentication="principal.utente.username"></strong>!
       <form th:action="@{/logout}" method="post" class="d-inline ms-3">
         <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </form>

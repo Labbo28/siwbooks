@@ -54,7 +54,7 @@
         <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Registrati</a>
       </div>
       <div sec:authorize="isAuthenticated()" class="user-info">
-        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.nome"></strong>!
+        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.username"></strong>!
         <form th:action="@{/logout}" method="post" class="d-inline ms-3">
           <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </form>
