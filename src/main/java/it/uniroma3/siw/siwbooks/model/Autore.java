@@ -48,8 +48,8 @@ public class Autore {
     @ManyToMany(mappedBy = "autori")
     private Set<Libro> libri = new HashSet<>();
     
-    // Un solo lato OneToOne → Autore è owner, con join column in tabella "autore"
-    @OneToOne(cascade = CascadeType.ALL)
+    
+    @OneToOne
     @JoinColumn(name = "immagine_id")
     private Immagine immagine;
     

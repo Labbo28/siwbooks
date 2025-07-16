@@ -89,6 +89,15 @@
             <i class="fas fa-user-plus"></i> Aggiungi Nuovo Autore
           </a>
         </div>
+        <div>
+          <form th:action="@{/admin/cleanup-images}" method="post" class="d-inline">
+    <button type="submit" class="btn btn-danger" 
+            onclick="return confirm('Sei sicuro di voler pulire le immagini?')">
+        <i class="fas fa-trash"></i> cleanup images
+    </button>
+</form>
+          
+        </div>
       </div>
 
       </div>

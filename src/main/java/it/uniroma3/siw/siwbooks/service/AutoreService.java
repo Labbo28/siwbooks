@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import it.uniroma3.siw.siwbooks.dto.NuovoAutoreDTO;
 import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Immagine;
+import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.repository.AutoreRepository;
 import it.uniroma3.siw.siwbooks.repository.LibroRepository;
 
@@ -102,5 +103,13 @@ public class AutoreService {
    public List<Autore> cercaAutori(String query) {
     return autoreRepository.findByNomeIgnoreCaseContainingOrCognomeIgnoreCaseContaining(query, query);
 }
+
+   public void deleteAutore(Autore autore) {
+    for (Libro libro : autore.getLibri()) {
+       rimuoviLibroDaAutore(autore.getId(), libro.getId());
+    }
+    autore.getImmagine().setUnlinked(true); 
+    autoreRepository.delete(autore);// variabile da usare durante il cleanup delle immagini
+   }
 
 }

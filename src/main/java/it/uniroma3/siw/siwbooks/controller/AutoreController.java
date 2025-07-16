@@ -124,4 +124,16 @@ public class AutoreController {
     private boolean hasValidFile(MultipartFile file) {
     return file != null && !file.isEmpty() && file.getSize() > 0;
 }
+
+@PostMapping("/autori/{id}/delete")
+    public String deleteAutore(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        Autore autore = autoreService.getAutoreById(id);
+        if (autore == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Autore non trovato.");
+            return "redirect:/autori";
+        }
+        autoreService.deleteAutore(autore);
+        redirectAttributes.addFlashAttribute("successMessage", "Autore eliminato con successo.");
+        return "redirect:/autori";
+    }
 }

@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.siwbooks.dto.NuovaImmagineDTO;
 import it.uniroma3.siw.siwbooks.dto.TipoImmagine;
-import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Immagine;
 import it.uniroma3.siw.siwbooks.repository.ImmagineRepository;
 

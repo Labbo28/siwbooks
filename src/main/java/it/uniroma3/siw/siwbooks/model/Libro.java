@@ -39,7 +39,7 @@ public class Libro {
     private int annoPubblicazione;
     
     // OneToMany unidirezionale: la FK (libro_id) verrà messa in tabella "immagine"
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     @JoinColumn(name = "libro_id") 
     private List<Immagine> copertina = new ArrayList<>();
     

@@ -3,7 +3,9 @@ package it.uniroma3.siw.siwbooks.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +21,20 @@ import it.uniroma3.siw.siwbooks.repository.LibroRepository;
 import it.uniroma3.siw.siwbooks.repository.UtenteRepository;
 
 @Component
+@Order(1)
 public class DataInitializer implements CommandLineRunner {
-
-    @Autowired
-    private AutoreRepository autoreRepository;
-
-    @Autowired
-    private LibroRepository libroRepository;
-
-    @Autowired 
-    private ImmagineRepository immagineRepository;
 
     @Autowired
     private UtenteRepository utenteRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${upload.dir.autori}")
+    private String pathAutori;
+
+    @Value("${upload.dir.libri}")
+    private String pathLibri;
 
     @Override
     @Transactional
@@ -45,63 +45,9 @@ public class DataInitializer implements CommandLineRunner {
             System.err.println("Errore durante l'inizializzazione del database: " + e.getMessage());
             e.printStackTrace();
         }
-        
-            initBooksAndAuthors();
-        
+
     }
-    private void initBooksAndAuthors() {
-        String pathAutori = "/assets/immaginiAutori/";
-        String pathLibri = "/assets/immaginiLibri/";
-        
-        // Controlla se i dati esistono già
-        if (autoreRepository.count() > 0 || libroRepository.count() > 0) {
-            System.out.println("Libri e autori già presenti nel database, saltato l'inserimento.");
-            return;
-        }
-        
-        try {
-            // 1. Crea e salva prima l'autore (senza relazioni)
-            Autore autore1 = new Autore("J.R.R.", "Tolkien", "Inglese", "1892", "1973");
-            autore1 = autoreRepository.save(autore1);
-            
-            // 2. Crea e salva il libro (senza relazioni)
-            Libro libro1 = new Libro("Il Signore degli Anelli", 1954);
-            libro1 = libroRepository.save(libro1);
-            
-            // 3. Stabilisci le relazioni usando collezioni mutabili
-            // Aggiungi il libro alla collezione di libri dell'autore
-            autore1.getLibri().add(libro1);
-            
-            // Aggiungi l'autore alla collezione di autori del libro
-            libro1.getAutori().add(autore1);
-            
-            // 4. Salva di nuovo per aggiornare le relazioni
-            autore1 = autoreRepository.save(autore1);
-            libro1 = libroRepository.save(libro1);
-            
-            // 5. Ora crea e salva le immagini (che dipendono dalle entità principali)
-            Immagine imgAutore = new Immagine("Tolkien", pathAutori + "tolkien.jpg");
-            imgAutore = immagineRepository.save(imgAutore);
-            
-            Immagine imgLibro = new Immagine("Il Signore degli Anelli", pathLibri + "signore-degli-anelli.jpeg");
-            imgLibro = immagineRepository.save(imgLibro);
-            
-            // 6. Aggiorna le entità con le immagini
-            autore1.setImmagine(imgAutore);
-            libro1.getCopertina().add(imgLibro);
-            
-            // 7. Salvataggio finale
-            autoreRepository.save(autore1);
-            libroRepository.save(libro1);
-            
-            System.out.println("Autore e libro inizializzati correttamente.");
-            
-        } catch (Exception e) {
-            System.err.println("Errore durante l'inizializzazione di autore e libro: " + e.getMessage());
-            e.printStackTrace();
-            throw e; // Rilancia l'eccezione per vedere il vero errore
-        }
-    }
+   
 
     private void initializeDatabase() {
         long userCount = utenteRepository.count();
@@ -125,11 +71,11 @@ public class DataInitializer implements CommandLineRunner {
 
         // Utente admin  
         createUserIfNotExists(
-            "Labbo", "obbaL", "admin@test.com", "admin123", Ruolo.ADMIN,
-            "Utente admin", "THE_GOAT_69"
+            "Ricccardo", "Labonia", "admin@test.com", "admin123", Ruolo.ADMIN,
+            "Utente admin", "labbo"
         );
 
-        printCredentials();
+       
     }
 
     private void checkAndCreateMissingTestUsers() {
@@ -159,13 +105,6 @@ public class DataInitializer implements CommandLineRunner {
                 Utente utente = new Utente(nome, cognome, email, encodedPassword, ruolo,username);
                 utenteRepository.save(utente);
                 
-                System.out.println(description + " creato con successo:");
-                System.out.println("  Email: " + email);
-                System.out.println("  Password: " + plainPassword);
-                System.out.println("  Nome: " + nome + " " + cognome);
-                System.out.println("  Ruolo: " + ruolo);
-                System.out.println();
-                
             } else {
                 System.out.println("Utente " + email + " già esistente, saltato.");
             }
@@ -174,22 +113,5 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void printCredentials() {
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("         CREDENZIALI DI ACCESSO");
-        System.out.println("=".repeat(50));
-        System.out.println("UTENTE NORMALE:");
-        System.out.println("  📧 Email: user@test.com");
-        System.out.println("  🔑 Password: password123");
-        System.out.println("  👤 Nome: Mario Rossi");
-        System.out.println("  🏷️  Ruolo: USER");
-        System.out.println();
-        System.out.println("UTENTE AMMINISTRATORE:");
-        System.out.println("  📧 Email: admin@test.com");
-        System.out.println("  🔑 Password: admin123");
-        System.out.println("  👤 Nome: Giulia Bianchi");
-        System.out.println("  🏷️  Ruolo: ADMIN");
-        System.out.println("=".repeat(50));
-        System.out.println("Inizializzazione database completata!\n");
-    }
 }
+
