@@ -70,5 +70,9 @@ public class UtenteService {
 
      }
 
+     public Iterable<Utente> getAllUsers() {
+        return utenteRepository.findAll();
+     }
+
     
 }

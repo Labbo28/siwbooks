@@ -5,25 +5,42 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import it.uniroma3.siw.siwbooks.repository.RecensioneRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import it.uniroma3.siw.siwbooks.controller.RecensioneController;
 import it.uniroma3.siw.siwbooks.dto.NuovoLibroDTO;
 import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Immagine;
 import it.uniroma3.siw.siwbooks.model.Libro;
+import it.uniroma3.siw.siwbooks.model.Recensione;
+import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.repository.AutoreRepository;
 import it.uniroma3.siw.siwbooks.repository.LibroRepository;
 
 @Service
 public class LibroService {
 
+    private final UtenteService utenteService;
+
+
+    @Autowired
+    private  RecensioneRepository recensioneRepository;
+
     @Autowired
     private LibroRepository libroRepository;
 
     @Autowired
     private AutoreRepository autoreRepository;
+
+
+    LibroService(UtenteService utenteService) {
+        this.utenteService = utenteService;
+    }
+
+  
 
     public List<Libro> getAllLibri() {
         return StreamSupport.stream(libroRepository.findAll().spliterator(), false)
@@ -63,4 +80,43 @@ public class LibroService {
     return libroRepository.findByTitoloIgnoreCaseContaining(query);
 }
 
+  public void deleteLibro(Long id) {
+    Optional<Libro> opt = libroRepository.findById(id);
+    
+    // Verifica se il libro esiste
+    if (!opt.isPresent()) {
+        throw new EntityNotFoundException("Libro con ID " + id + " non trovato");
+    }
+    
+    Libro toDelete = opt.get();
+    
+    // Gestione delle immagini di copertina
+    if (toDelete.getCopertina() != null) {
+        for (Immagine i : toDelete.getCopertina()) {
+            i.setUnlinked(true);
+        }
+    }
+    
+    // Rimozione delle associazioni con gli autori
+    if (toDelete.getAutori() != null) {
+        for (Autore a : toDelete.getAutori()) {
+            a.getLibri().remove(toDelete);
+            autoreRepository.save(a);
+        }
+    }
+    
+    // Gestione delle recensioni
+    if (toDelete.getRecensioni() != null) {
+        for (Recensione r : toDelete.getRecensioni()) {
+            // Rimuovi la recensione dall'utente proprietario
+            if (r.getUtente() != null) {
+                r.getUtente().getRecensioni().remove(r);
+            }
+            recensioneRepository.delete(r);
+        }
+    }
+    
+    // Elimina il libro
+    libroRepository.delete(toDelete);
+}
 }

@@ -15,6 +15,9 @@ import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.service.LibroService;
 import it.uniroma3.siw.siwbooks.service.RecensioneService;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -68,6 +71,14 @@ public String getLibroById(Model model, @PathVariable("id") Long id) {
 
     return "libro";
 }
+
+@PostMapping("/libri/{id}/delete")
+public String deleteLibro(Model model, @PathVariable("id")Long id ) {
+    libroService.deleteLibro(id);
+    model.addAttribute("successMessage", "Libro eliminato con successo");
+   return "redirect:/libri";
+}
+
 
      
 
