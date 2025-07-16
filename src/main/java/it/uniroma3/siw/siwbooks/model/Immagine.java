@@ -17,9 +17,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Immagine {
 
-    public Immagine(String nome, String path) {
+    public Immagine(String path) {
        
         this.path = path;
+        this.unlinked = false;
     }
     
     @Id
