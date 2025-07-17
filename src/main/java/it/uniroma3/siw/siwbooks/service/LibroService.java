@@ -1,5 +1,6 @@
 package it.uniroma3.siw.siwbooks.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -7,11 +8,17 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import it.uniroma3.siw.siwbooks.repository.RecensioneRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import it.uniroma3.siw.siwbooks.controller.RecensioneController;
+import it.uniroma3.siw.siwbooks.dto.NuovaImmagineDTO;
 import it.uniroma3.siw.siwbooks.dto.NuovoLibroDTO;
+import it.uniroma3.siw.siwbooks.dto.TipoImmagine;
 import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Immagine;
 import it.uniroma3.siw.siwbooks.model.Libro;
@@ -23,7 +30,9 @@ import it.uniroma3.siw.siwbooks.repository.LibroRepository;
 @Service
 public class LibroService {
 
-    private final UtenteService utenteService;
+
+    @Autowired
+    private ImmagineService immagineService;
 
 
     @Autowired
@@ -34,11 +43,6 @@ public class LibroService {
 
     @Autowired
     private AutoreRepository autoreRepository;
-
-
-    LibroService(UtenteService utenteService) {
-        this.utenteService = utenteService;
-    }
 
   
 
@@ -118,5 +122,77 @@ public class LibroService {
     
     // Elimina il libro
     libroRepository.delete(toDelete);
+}
+
+
+@Transactional
+public void modificaLibro(Long id, NuovoLibroDTO nuovoLibroDTO) {
+    // Recupera il libro esistente
+    Libro libro = libroRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Libro con ID " + id + " non trovato"));
+    
+    // Aggiorna i campi base
+    libro.setTitolo(nuovoLibroDTO.getTitolo());
+    libro.setAnnoPubblicazione(nuovoLibroDTO.getAnnoPubblicazione());
+    
+    // Gestione degli autori
+    aggiornaAutoriLibro(libro, nuovoLibroDTO.getIdAutore());
+    
+    // Gestione delle immagini
+    if (nuovoLibroDTO.getFileImmagine() != null && !nuovoLibroDTO.getFileImmagine().isEmpty()) {
+        aggiornaImmaginiLibro(libro, nuovoLibroDTO.getFileImmagine());
+    }
+    
+    // Salva il libro modificato
+    libroRepository.save(libro);
+}
+
+private void aggiornaAutoriLibro(Libro libro, List<Long> nuoviIdAutori) {
+    // Rimuovi il libro dagli autori che non sono più associati
+    Set<Autore> autoriAttuali = new HashSet<>(libro.getAutori());
+    for (Autore autore : autoriAttuali) {
+        if (nuoviIdAutori == null || !nuoviIdAutori.contains(autore.getId())) {
+            autore.getLibri().remove(libro);
+            libro.getAutori().remove(autore);
+        }
+    }
+    
+    // Aggiungi nuovi autori
+    if (nuoviIdAutori != null) {
+        for (Long idAutore : nuoviIdAutori) {
+            if (libro.getAutori().stream().noneMatch(a -> a.getId().equals(idAutore))) {
+                Autore autore = autoreRepository.findById(idAutore)
+                    .orElseThrow(() -> new EntityNotFoundException("Autore con ID " + idAutore + " non trovato"));
+                
+                libro.getAutori().add(autore);
+                autore.getLibri().add(libro);
+            }
+        }
+    }
+}
+
+private void aggiornaImmaginiLibro(Libro libro, List<MultipartFile> nuoveImmagini) {
+    try {
+        // Marca le immagini attuali come unlinked
+        if (libro.getCopertina() != null) {
+            for (Immagine immagine : libro.getCopertina()) {
+                immagine.setUnlinked(true);
+            }
+        }
+        
+        // Pulisce la lista delle immagini
+        libro.getCopertina().clear();
+        
+        // Processa le nuove immagini
+        for (MultipartFile file : nuoveImmagini) {
+            if (!file.isEmpty()) {
+                NuovaImmagineDTO immagineDTO = new NuovaImmagineDTO(file, TipoImmagine.COPERTINA);
+                Immagine nuovaImmagine = immagineService.uploadImmagine(immagineDTO);
+                libro.getCopertina().add(nuovaImmagine);
+            }
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("Errore durante l'aggiornamento delle immagini: " + e.getMessage(), e);
+    }
 }
 }

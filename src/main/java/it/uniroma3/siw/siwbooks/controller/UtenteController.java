@@ -15,7 +15,9 @@ import it.uniroma3.siw.siwbooks.dto.UserRegistrationDTO;
 import it.uniroma3.siw.siwbooks.dto.UserLoginDTO;
 import it.uniroma3.siw.siwbooks.exceptions.UsernameAlreadyExistsException;
 import it.uniroma3.siw.siwbooks.exceptions.alreadyRegisteredException;
+import it.uniroma3.siw.siwbooks.model.CustomOAuth2User;
 import it.uniroma3.siw.siwbooks.model.UserPrincipal;
+import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
 import jakarta.validation.Valid;
 
@@ -26,33 +28,37 @@ public class UtenteController {
     @Autowired
     private UtenteService utenteService;
 
-    @GetMapping("/")
-    public String homePage(Authentication authentication) {
-        // Debug per verificare l'autenticazione
-        if (authentication != null && authentication.isAuthenticated()) {
-            System.out.println("=== DEBUG AUTENTICAZIONE ===");
-            System.out.println("Utente autenticato: " + authentication.getName());
-            System.out.println("Principal type: " + authentication.getPrincipal().getClass().getName());
-            
-            // Mostra tutti i ruoli/authorities
-            System.out.println("Authorities:");
-            authentication.getAuthorities().forEach(auth -> 
-                System.out.println("  - " + auth.getAuthority())
-            );
-            
-            // Cast per accedere ai dati dell'utente
-            if (authentication.getPrincipal() instanceof UserPrincipal) {
-                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-                System.out.println("Nome utente: " + userPrincipal.getUtente().getNome());
-                System.out.println("Email utente: " + userPrincipal.getUtente().getEmail());
-                System.out.println("Ruolo utente: " + userPrincipal.getUtente().getRuolo());
-            }
-            System.out.println("============================");
-        } else {
-            System.out.println("Nessun utente autenticato");
+   @GetMapping("/")
+public String homePage(Authentication authentication) {
+    if (authentication != null && authentication.isAuthenticated()) {
+        System.out.println("=== DEBUG AUTENTICAZIONE ===");
+        System.out.println("Utente autenticato: " + authentication.getName());
+        System.out.println("Principal type: " + authentication.getPrincipal().getClass().getName());
+        
+        authentication.getAuthorities().forEach(auth -> 
+            System.out.println("  - " + auth.getAuthority())
+        );
+        
+        // Gestisce sia UserPrincipal che CustomOAuth2User
+        Utente utente = null;
+        if (authentication.getPrincipal() instanceof UserPrincipal) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            utente = userPrincipal.getUtente();
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User) {
+            CustomOAuth2User oauth2User = (CustomOAuth2User) authentication.getPrincipal();
+            utente = oauth2User.getUtente();
         }
-        return "index";
+        
+        if (utente != null) {
+            System.out.println("Nome utente: " + utente.getNome());
+            System.out.println("Email utente: " + utente.getEmail());
+            System.out.println("Ruolo utente: " + utente.getRuolo());
+            System.out.println("Provider: " + utente.getProvider());
+        }
+        System.out.println("============================");
     }
+    return "index";
+}
 
     @GetMapping("/register")
     public String registerPage(Model model) {

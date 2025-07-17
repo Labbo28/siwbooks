@@ -102,16 +102,21 @@
           </a>
         </div>
       </section>
-
-      <section class="content-card mb-5">
-        <form th:action="@{/libri/{id}/delete(id=${libro.id})}" method="post">
-          <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash-alt">
-            </i>
-            Elimina Libro
-          </button>
-        </form>
-      </section>
+      
+     <div sec:authorize="hasRole('ADMIN')" class="content-card admin-panel mb-4">
+<h4><i class="fas fa-cog"></i> Pannello Amministratore</h4>
+<div class="d-flex gap-2 flex-wrap">
+<a th:href="@{/libri/{id}/edit(id=${libro.id})}" class="btn btn-warning">
+<i class="fas fa-edit"></i> Modifica Libro
+</a>
+<form th:action="@{/libri/{id}/delete(id=${libro.id})}" method="post" class="d-inline">
+    <button type="submit" class="btn btn-danger" 
+            onclick="return confirm('Sei sicuro di voler eliminare questo libro?')">
+        <i class="fas fa-trash"></i> Elimina Libro
+    </button>
+</form>
+</div>
+</div>
 
       <section class="content-card mb-5">
         <h3><i class="fas fa-comments"></i> Recensioni</h3>

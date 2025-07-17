@@ -2,33 +2,46 @@ package it.uniroma3.siw.siwbooks.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import it.uniroma3.siw.siwbooks.dto.NuovaRecensioneDTO;
+import it.uniroma3.siw.siwbooks.dto.NuovoLibroDTO;
+import it.uniroma3.siw.siwbooks.model.Autore;
 import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.model.Recensione;
 import it.uniroma3.siw.siwbooks.model.Utente;
+import it.uniroma3.siw.siwbooks.service.AutoreService;
 import it.uniroma3.siw.siwbooks.service.LibroService;
 import it.uniroma3.siw.siwbooks.service.RecensioneService;
 import it.uniroma3.siw.siwbooks.service.UtenteService;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
 public class LibroController {
+
+    private final AutoreService autoreService;
     @Autowired
     private RecensioneService recensioneService;
     @Autowired
      private LibroService libroService;
      @Autowired
         private UtenteService utenteService;
+
+    LibroController(AutoreService autoreService) {
+        this.autoreService = autoreService;
+    }
      @GetMapping("/libri")
      public String getAllLibri(Model model) {
          // Aggiungi i libri al modello per poterli visualizzare nella vista
@@ -79,7 +92,72 @@ public String deleteLibro(Model model, @PathVariable("id")Long id ) {
    return "redirect:/libri";
 }
 
+@GetMapping("/libri/{id}/edit")
+public String getFormModificaLibro(Model model, @PathVariable("id") Long id) {
+    Libro libro = libroService.getLibroById(id);
+    
+    // Ottieni tutti gli autori disponibili
+    List<Autore> tuttiAutori = autoreService.getAllAutori();
+    
+    // Mostra tutti gli autori (più user-friendly)
+    List<Autore> autoriDisponibili = tuttiAutori;
+    
+    // Crea il DTO precompilato con i dati del libro
+    NuovoLibroDTO nuovoLibroDTO = new NuovoLibroDTO();
+    nuovoLibroDTO.setTitolo(libro.getTitolo());
+    nuovoLibroDTO.setAnnoPubblicazione(libro.getAnnoPubblicazione());
+    
+    // Precompila gli ID degli autori attualmente associati
+    List<Long> autoriAttualiIds = libro.getAutori().stream()
+        .map(Autore::getId)
+        .collect(Collectors.toList());
+    nuovoLibroDTO.setIdAutore(autoriAttualiIds);
+    
+    // Aggiungi tutto al model
+    model.addAttribute("libro", libro);
+    model.addAttribute("nuovoLibroDTO", nuovoLibroDTO);
+    model.addAttribute("autoriDisponibili", autoriDisponibili);
+    model.addAttribute("autoriAttuali", libro.getAutori());
+    
+    return "modifica-libro";
+}
 
-     
+
+
+     @PostMapping("/libri/{id}/edit")
+public String modificaLibro(@PathVariable("id") Long id, 
+                           @Valid @ModelAttribute NuovoLibroDTO nuovoLibroDTO,
+                           BindingResult bindingResult, 
+                           Model model) {
+    
+    if (bindingResult.hasErrors()) {
+        // Ricarica i dati necessari per il form in caso di errori
+        Libro libro = libroService.getLibroById(id);
+        List<Autore> autoriDisponibili = autoreService.getAllAutori();
+        
+        model.addAttribute("libro", libro);
+        model.addAttribute("autoriDisponibili", autoriDisponibili);
+        model.addAttribute("autoriAttuali", libro.getAutori());
+        
+        return "modifica-libro";
+    }
+    
+    try {
+        libroService.modificaLibro(id, nuovoLibroDTO);
+        return "redirect:/libri/" + id;
+    } catch (Exception e) {
+        model.addAttribute("errorMessage", "Errore durante la modifica del libro: " + e.getMessage());
+        
+        // Ricarica i dati per il form
+        Libro libro = libroService.getLibroById(id);
+        List<Autore> autoriDisponibili = autoreService.getAllAutori();
+        
+        model.addAttribute("libro", libro);
+        model.addAttribute("autoriDisponibili", autoriDisponibili);
+        model.addAttribute("autoriAttuali", libro.getAutori());
+        
+        return "modifica-libro";
+    }
+}
 
 }

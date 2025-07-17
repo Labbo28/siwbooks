@@ -9,15 +9,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import it.uniroma3.siw.siwbooks.model.Autore;
-import it.uniroma3.siw.siwbooks.model.Immagine;
-import it.uniroma3.siw.siwbooks.model.Libro;
 import it.uniroma3.siw.siwbooks.model.Utente;
 import it.uniroma3.siw.siwbooks.model.enums.Ruolo;
-import it.uniroma3.siw.siwbooks.repository.AutoreRepository;
-import it.uniroma3.siw.siwbooks.repository.ImmagineRepository;
-import it.uniroma3.siw.siwbooks.repository.LibroRepository;
+
 import it.uniroma3.siw.siwbooks.repository.UtenteRepository;
 
 @Component

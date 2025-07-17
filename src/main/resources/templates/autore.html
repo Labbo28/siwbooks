@@ -81,9 +81,6 @@ class="btn btn-sm btn-danger" onclick="return confirm('Rimuovere questo libro da
 <a th:href="@{/autori/{id}/edit(id=${autore.id})}" class="btn btn-warning">
 <i class="fas fa-edit"></i> Modifica Autore
 </a>
-<a th:href="@{/autori/{id}/aggiungiLibri(id=${autore.id})}" class="btn btn-success">
-<i class="fas fa-book-medical"></i> Aggiungi Libri
-</a>
 <form th:action="@{/autori/{id}/delete(id=${autore.id})}" method="post" class="d-inline">
     <button type="submit" class="btn btn-danger" 
             onclick="return confirm('Sei sicuro di voler eliminare questo autore?')">
