@@ -2,8 +2,34 @@
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
   <head th:replace="fragments/head :: head('SIWBooks – Nuovo Autore')"></head>
   <body class="bg-light">
-    <header class="header">…</header>
-    <nav class="main-nav">…</nav>
+     <header class="header">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a th:href="@{/}" class="logo"><i class="fas fa-book"></i> SIWBooks</a>
+      <div sec:authorize="!isAuthenticated()" class="login-register">
+        <a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a th:href="@{/register}"><i class="fas fa-user-plus"></i> Registrati</a>
+      </div>
+      <div sec:authorize="isAuthenticated()" class="user-info">
+        <i class="fas fa-user"></i> Benvenuto, <strong sec:authentication="principal.utente.username"></strong>!
+        <form th:action="@{/logout}" method="post" class="d-inline ms-3">
+          <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a th:href="@{/}"><i class="fas fa-home"></i> Home</a></li>
+        <li><a th:href="@{/libri}"><i class="fas fa-book"></i> Libri</a></li>
+        <li><a th:href="@{/autori}"><i class="fas fa-user-edit"></i> Autori</a></li>
+        <li sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/admin}"><i class="fas fa-cog"></i> Admin</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
     <main class="main-content py-5">
       <div class="container" style="max-width:600px;">
