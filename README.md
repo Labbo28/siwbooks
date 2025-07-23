@@ -53,6 +53,6 @@ Questo sistema permette la gestione di libri, autori e recensioni da parte di ut
 - Se prova a scrivere una recensione, viene invitato a effettuare il login.
 
 ---
-
+### Modello di dominio
 [Visualizza il PDF](./siwbooks.pdf)
-
+---
