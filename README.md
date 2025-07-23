@@ -1,4 +1,4 @@
-# Book Review System – Casi d'Uso
+# SiwBooks – Casi d'Uso
 
 Questo sistema permette la gestione di libri, autori e recensioni da parte di utenti registrati e amministratori. Di seguito i principali casi d'uso supportati dall'applicazione.
 
